@@ -1,0 +1,221 @@
+* Replicación de bases de datos
+** Cosas por hacer
+   1. [X] Instalar MySQL/MariaDB y PostgreSQL en un equipo que será el servidor
+         maestro.
+   2. [X] Instalar MySQL/MariaDB y PostgreSQL en otro equipo que será el servidor
+      esclavo.
+   3. [X] Instalar phpMyAdmin y PGadmin en el servidor maestro para monitorear la
+      replicación.
+   4. [X] Instalar dos instancias locales de MediaWiki y configurar una para que
+      use MySQL/MariaDB y otra para que use PostgreSQL
+   5. [X] Verificar el servicio de base de datos maestro y verificar que la
+      replicación lleve los datos al servidor esclavo.
+
+El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
+
+[[img/diagrama.png][diagrama]]
+
+* Reporte
+
+*** Integrantes:
+    + Galeana Araujo Emiliano
+    + Gladin García Angel Iván
+    + González Huerta Francisco Javier
+    + Vazquez Rizo Paola
+
+** Introducción
+   El trabajo se realizó en una máquina física y local, para posteriormente pasar
+   todo el trabajo al servidor de Amazon.
+
+   Recordemos que una replicación de base de datos sirve para copiar de forma
+   exacta en otra ubicación una instancia de la base de datos. Podemos usarla en
+   entornos distribuidos donde una sola base de datos tiene que ser utilizada y
+   actualizada en varios lugares.
+
+   Algunos beneficios en la replicación es que mejora la seguridad de los datos,
+   mejora el rendimiento (pues los múltiples accesos no saturan a los servidores),
+   y hay una mejora en la fiabilidad, pues podemos acceder a los datos si alguna
+   máquina tuviese errores.
+
+   Tipos de realización de bases de datos
+   Hay 3 principales tipos de replicación de bases de datos
+
+
+   + Replicación de mezcla: los datos de dos o más bases de datos se combinan en
+     una sola base de datos. En primer lugar se envía una copia completa de la
+     base de datos. Luego el Sistema de Gestión de Base de Datos va comprobando
+     los cambios que van apareciendo en los distintos nodos y a una hora
+     programada o a petición los datos se sincronizan. Es sobre todo útil cuando
+     cada nodo suele utilizar solo los datos que se actualizan allí pero que por
+      circunstancias necesita tener también los datos de los otros sitios.
+
+   + Replicación Instantánea: los datos de un servidor son simplemente copiados a
+     otro servidor o a otra base de datos dentro del mismo servidor. Al copiarse
+     todo no necesitas un control de cambios. Se suele utilizar cuando los datos
+     cambian con  muy poca frecuencia.
+
+   + Replicación Transaccional: primero se envía una copia completa de la base de
+     datos y luego se van enviando de forma periódica (o a veces continua) las
+     actualizaciones de los datos que cambian. Se utiliza cuando necesitas que
+     todos los nodos con todas las instancias de la base de datos tengan los
+     mismos datos a los pocos segundos de realizarse un cambio.
+   
+** Prerequisitos
+   Los siguiente es necesario para el correcto funcionamiento del proyecto.
+   1. PHP 7.3.14-1
+   2. MySQL 8.0.20
+   3. apache2 2.4.29
+   4. phpMyAdmin
+   5. pgAdmin4
+
+** Instalación
+   Después de unos problemas técnicos con nuestra instancia de AWS, replicamos el
+   proyecto en un servidor que compramos.
+
+   Lo primero en hacer es instalar MySQL
+
+   # begin_src sh
+   sudo apt-get install mysql-server mysql-client
+   # end_src sh
+
+   Abrimos la configuració de mysql en =master=. Los cambios hechos se pueden leer
+   en la sección de =Configuración=.
+
+   # begin_src sh
+   sudo vi /etc/mysql/my.cnf
+   # end_src sh
+
+   Una vez guardamos los cambios, necesitamos aplicar los cambios, esto lo 
+   podemos hacer con el siguiente comando.
+
+   # begin_src sh
+   sudo service mysql restart
+   # end_src sh
+
+   Ahora necesitamos acceder a la consola de =MySQL=. Los cambios se pueden leer
+   en la sección de =Configuración=.
+
+   # begin_src sh
+   mysql -u root -p
+   # end_src sh
+
+   Abrimos una nueva ventana para exportar nuestra base de datos. Lo hacemos así
+   pues al estar nuestra base bloqueada, queremos que se mantenga de esa manera.
+
+   # begin_src sh
+   mysqldump -u root -o --opt newdatabase > newdatabase.sql
+   # end_src sh
+   
+   
+*** Sábado 13 de Junio de 2020
+    Se instaló PHP, MySQL y apache2 en una máquna que es el servidor maestro y en
+    el servidor esclavo. Las siguientes imágenes muestran lo anterior.
+
+    [[./img/php_instalacion.png][php_instalacion.png]]
+
+    [[./img/apache_instalacion.png][apache_instalacion.png]]
+
+    [[./img/Sm.png][Sm.png]]
+
+*** Domingo 14 de Junio de 2020
+    Se instaló phpMyAdmin y PGAdmin4 en las mismas máquinas. Las siguientes
+    imágenes muestran lo anterior.
+
+    Para este punto solo faltaría realizar la instalación de MediaWiki y terminar
+    la configuración.
+
+    [[./img/pgmyadmin4.png][pgmyadmin4.png]]
+
+    [[./img/Phpmyadmin.png][Phpmyadmin.png]]
+
+*** Lunes 15 de Junio de 2020
+    Se instaló MediaWiki, tanto en postGres como en MySQL. Ambos corren y se
+    pueden monitorear. Solo falta hacer la replicación (La parte importante).
+
+    Otra cosa que faltaría realizar es portar todo al server de Amazon, pues
+    recordemos que todo se ha ido realizando en nuestras máquinas físicas.
+
+    Las siguientes imágenes son del funcionamiento de Postgres y MySQL.
+
+    [[./img/mediawikipost.png][mediawikipost.png]]
+
+    [[./img/mediawikimysql.png][mediawikimysql.png]]
+
+*** Sábado 20 de Junio de 2020
+    Se subió el proyecto funcional y corre en el servidor de Amazon.
+
+** Configuracion
+   
+*** Instalación
+    En general para cualquier cosa que descarguemos sirve el comando
+
+    # begin_src sh
+    sudo apt-get install <paquete>
+    # end_src sh
+
+*** Configuración de 'Master'
+
+    En el archivo =my.cnf= buscar lo siguiente =bind-address= y reemplazarla la 
+    IP por la IP del servidor.
+
+    Tenemos que descomentar la línea que comienza con =server-id=, y asignar un 
+    número, este número puede ser cualquiera, aunque hay ciertas recomendaciones,
+    nosotros usaremos el número =1=. quedando la línea de la siguienge manera
+
+    # begin_src sh
+    server-id            = 1
+    # end_src sh
+
+    Lo siguiente que tenemos que modificar es =log_bin=. Que es de donde 'slave'
+    va a copiar todos los cambios registrados en el log. Basta con solo 
+    descomentar la línea. 
+
+    Por último tenemos que designar la base de datos que vamos a replicar. Es 
+    importante notar que podemos replicar varias bases de datos solamente 
+    repitiendo la siguiente línea.
+
+    # begin_src sh
+    binlog_do_db         = <nombre base de datos>
+    # end_src sh
+
+*** Consola de MySQL 'Master'
+
+    El primer comando le va a concecer privilegios al 'slave'; También podemos
+    generar una contraseña.
+
+    # begin_src sh
+    GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'password';
+    FLUSH PRIVILEGES;
+    # end_src sh
+
+    Nos cambiamos a nuestra base de datos, y la bloqueamos para prevenir cambios.
+
+    # begin_src sh
+    USE newdatabase;
+    FLUSH TABLES WITH READ LOCK;
+    SHOW MASTER STATUS;
+    # end_src sh
+    
+    Veremos una tabla y guardamos los DATOS que usaremos más tarde.
+
+    Una vez hecho lo de la nueva ventana (Ver =Instalación=). Podemos terminar,
+    no sin antes desbloquear.
+
+    # begin_src sh
+    UNLOCK TABLES;
+    QUIT;
+    # end_src sh
+    
+   
+**** TODO cambiar los datos de arribita
+** Errores frecuentes.
+   El mayor error que tuvimos (Que fue nuestra culpa) fue que no recordábamos el
+   passphrase para conectarnos, pero revisando nuestras conversaciones, lo
+   pudimos recuperar y ya logramos acceder al servidor.
+
+   Otro error que tuvimos fue al momento de hacerlo en nuestra computadora, pues
+   las versiones de php y phpMyAdmin tenían conflictos, con un vistazo en
+   internet pudimos solucionarlo, aparte de que a algunos de nosotros ya nos
+   había ocurrido algo parecido en otra materia.
+
+
