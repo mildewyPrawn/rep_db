@@ -119,6 +119,83 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
    Crearemos la configuració de mysql para =master=. Los cambios hechos se pueden
    leer en la sección de =Configuración=.
 
+   Hacemos una liga para =mediaWiki=.
+
+   #+begin_src sh :exports code
+   ln -s /var/lib/mediawiki/ /var/www/html/mediawiki
+   #+end_src
+
+   Habilitamos módulos de php con =phpenmod=. Y reiniciamos =apache2=. La última
+   línea solo es para checar el estado de =apache2=.
+
+   #+begin_src sh :exports code
+   phpenmod mbstring
+   phpenmod xml
+   systemctl restart apache2
+   systemctl status apache2
+   #+end_src
+
+   Copiamos ca configuración para =mediaWiki=.
+
+   #+begin_src sh :exports code
+   cp /etc/apache2/sites-available/000-default.conf  /etc/apache2/sites-available/mediawiki.conf
+   #+end_src
+
+TODO: qué cambios tiene el archivo de arriba
+
+   Por último cargamos la nueva configuración y quitamos la anterior. Reiniciamos
+   apache y verificamos.
+
+   #+begin_src sh :exports code
+   a2ensite mediawiki.conf 
+   a2dissite 000-default.conf 
+   systemctl reload apache2
+   systemctl status apaeche2
+   #+end_src 
+
+TODO: ¿Por qué hay un mediaWiki2?
+
+   Lo siguiente es cargar las credenciales de la base de datos que creamos 
+   anteriormente para que =mediaWiki= pueda reconocerlas. El archivo se llama
+   =LocalSettings.php= y se encuentra en =/var/www/html/mediaWiki/mediaWiki-1.34.2=.
+
+   Esto implica dar permisos =600= al archivo y cambiar al dueño.
+
+TODO: ¿Para qué necesitamos python?
+
+   Instalaremos python, postgres y unas bibliotecas:
+
+   #+begin_src sh :export code
+   apt install -y python3-pip
+   apt install build-essential libssl-dev libffi-dev python3-dev
+   apt install postgresql postgresql-contrib
+   apt install libgmp3-dev libpq-dev libapache2-mod-wsgi-py3
+   pyton3 -m pip install wheel
+   #+end_src
+
+   Creamos un entorno de python, y ahí
+   
+   #+begin_src sh :export code
+   wget https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v3.4/pip/pgadmin4-3.4-py2.py3-none-any.whl
+   #+end_src
+
+   Por último 
+
+   #+begin_src sh :export code
+   pip install pgadmin4-1.4-py2.py3-none-any.whl
+   #+end_src
+
+   Y habilitamos el modo de servidor:
+
+   #+begin_src sh :export code
+   cd environments/my_env/lib/python3.6/site-packages/
+   echo "SERVER_MODE = False" >> pgadmin4/config_local.py
+   #+end_src
+   
+
+
+
+
    #+begin_src sh :exports code
    sudo vi /etc/mysql/my.cnf
    #+end_src sh
@@ -193,6 +270,29 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
     A excepción de =mediaWiki=, que ya explicamos cómo se descarga.
 
+*** Consola de MySQL
+
+    Lo primero es crear un usuario:
+
+    #+begin_src sh :exports code
+    CREATE USER 'mediawiki'@'localhost' IDENTIFIED BY 'alias';
+    #+end_src sh
+    
+    Creamos la base de datos.
+
+    #+begin_src sh :exports code
+    CREATE DATABASE mediawiki_db;
+    #+end_src
+
+    Concedemos privilegios:
+
+    #+begin_src sh :exports code
+    GRANT ALL ON mediawiki_db.* TO 'mediawiki'@'localhost';
+    #+end_src
+    
+   
+**** TODO cambiar los datos de arribita
+
 *** Configuración de 'Master'
 
     En el archivo =my.cnf= buscar lo siguiente =bind-address= y reemplazarla la 
@@ -217,55 +317,6 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     #+begin_src sh :exports code
     binlog_do_db         = <nombre base de datos>
     #+end_src sh
-
-*** Consola de MySQL 'Master'
-
-    Lo primero es crear un usuario:
-
-    #+begin_src sh :exports code
-    CREATE USER 'mediawiki'@'localhost' IDENTIFIED BY 'alias';
-    #+end_src sh
-    
-    Creamos la base de datos.
-
-    #+begin_src sh :exports code
-    CREATE DATABASE mediawiki_db;
-    #+end_src
-
-    Concedemos privilegios:
-
-    #+begin_src sh :exports code
-    GRANT ALL ON mediawiki_db.* TO 'mediawiki'@'localhost';
-    #+end_src
-
-    El siguiente comando va a concecer privilegios al 'slave'; También podemos
-    generar una contraseña.
-
-    #+begin_src sh :exports code
-    GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'password';
-    FLUSH PRIVILEGES;
-    #+end_src sh
-
-    Nos cambiamos a nuestra base de datos, y la bloqueamos para prevenir cambios.
-
-    #+begin_src sh :exports code
-    USE newdatabase;
-    FLUSH TABLES WITH READ LOCK;
-    SHOW MASTER STATUS;
-    #+end_src sh
-    
-    Veremos una tabla y guardamos los DATOS que usaremos más tarde.
-
-    Una vez hecho lo de la nueva ventana (Ver =Instalación=). Podemos terminar,
-    no sin antes desbloquear.
-
-    #+begin_src sh :exports code
-    UNLOCK TABLES;
-    QUIT;
-    #+end_src sh
-    
-   
-**** TODO cambiar los datos de arribita
 ** Errores frecuentes.
    El mayor error que tuvimos (Que fue nuestra culpa) fue que no recordábamos el
    passphrase para conectarnos, pero revisando nuestras conversaciones, lo
