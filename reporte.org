@@ -74,9 +74,9 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
    Lo primero en hacer es instalar MySQL
 
-   # begin_src sh
+   #+begin_src sh :exports code
    sudo apt-get install mysql-server mysql-client
-   # end_src sh
+   #+end_src sh
 
    Abrimos la configuració de mysql en =master=. Los cambios hechos se pueden leer
    en la sección de =Configuración=.
