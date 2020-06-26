@@ -81,30 +81,30 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
    Abrimos la configuració de mysql en =master=. Los cambios hechos se pueden leer
    en la sección de =Configuración=.
 
-   # begin_src sh
+   #+begin_src sh :exports code
    sudo vi /etc/mysql/my.cnf
-   # end_src sh
+   #+end_src sh
 
    Una vez guardamos los cambios, necesitamos aplicar los cambios, esto lo 
    podemos hacer con el siguiente comando.
 
-   # begin_src sh
+   #+begin_src sh :exports code
    sudo service mysql restart
-   # end_src sh
+   #+end_src sh
 
    Ahora necesitamos acceder a la consola de =MySQL=. Los cambios se pueden leer
    en la sección de =Configuración=.
 
-   # begin_src sh
+   #+begin_src sh :exports code
    mysql -u root -p
-   # end_src sh
+   #+end_src sh
 
    Abrimos una nueva ventana para exportar nuestra base de datos. Lo hacemos así
    pues al estar nuestra base bloqueada, queremos que se mantenga de esa manera.
 
-   # begin_src sh
+   #+begin_src sh :exports code
    mysqldump -u root -o --opt newdatabase > newdatabase.sql
-   # end_src sh
+   #+end_src sh
    
    
 *** Sábado 13 de Junio de 2020
@@ -149,9 +149,9 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 *** Instalación
     En general para cualquier cosa que descarguemos sirve el comando
 
-    # begin_src sh
+    #+begin_src sh :exports code
     sudo apt-get install <paquete>
-    # end_src sh
+    #+end_src sh
 
 *** Configuración de 'Master'
 
@@ -162,9 +162,9 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     número, este número puede ser cualquiera, aunque hay ciertas recomendaciones,
     nosotros usaremos el número =1=. quedando la línea de la siguienge manera
 
-    # begin_src sh
+    #+begin_src sh :exports code
     server-id            = 1
-    # end_src sh
+    #+end_src sh
 
     Lo siguiente que tenemos que modificar es =log_bin=. Que es de donde 'slave'
     va a copiar todos los cambios registrados en el log. Basta con solo 
@@ -174,37 +174,37 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     importante notar que podemos replicar varias bases de datos solamente 
     repitiendo la siguiente línea.
 
-    # begin_src sh
+    #+begin_src sh :exports code
     binlog_do_db         = <nombre base de datos>
-    # end_src sh
+    #+end_src sh
 
 *** Consola de MySQL 'Master'
 
     El primer comando le va a concecer privilegios al 'slave'; También podemos
     generar una contraseña.
 
-    # begin_src sh
+    #+begin_src sh :exports code
     GRANT REPLICATION SLAVE ON *.* TO 'slave_user'@'%' IDENTIFIED BY 'password';
     FLUSH PRIVILEGES;
-    # end_src sh
+    #+end_src sh
 
     Nos cambiamos a nuestra base de datos, y la bloqueamos para prevenir cambios.
 
-    # begin_src sh
+    #+begin_src sh :exports code
     USE newdatabase;
     FLUSH TABLES WITH READ LOCK;
     SHOW MASTER STATUS;
-    # end_src sh
+    #+end_src sh
     
     Veremos una tabla y guardamos los DATOS que usaremos más tarde.
 
     Una vez hecho lo de la nueva ventana (Ver =Instalación=). Podemos terminar,
     no sin antes desbloquear.
 
-    # begin_src sh
+    #+begin_src sh :exports code
     UNLOCK TABLES;
     QUIT;
-    # end_src sh
+    #+end_src sh
     
    
 **** TODO cambiar los datos de arribita
