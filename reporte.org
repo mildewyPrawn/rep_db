@@ -1,13 +1,20 @@
+
 * Replicación de bases de datos
 ** Cosas por hacer
-   1. [X] Instalar MySQL/MariaDB y PostgreSQL en un equipo que será el servidor
+   1. [-] Instalar MySQL/MariaDB y PostgreSQL en un equipo que será el servidor
          maestro.
-   2. [X] Instalar MySQL/MariaDB y PostgreSQL en otro equipo que será el servidor
+      1. [X] MySQL
+      2. [ ] PostgreSQL
+   2. [-] Instalar MySQL/MariaDB y PostgreSQL en otro equipo que será el servidor
       esclavo.
+      1. [X] MySQL
+      2. [ ] PostgreSQL
    3. [X] Instalar phpMyAdmin y PGadmin en el servidor maestro para monitorear la
       replicación.
-   4. [X] Instalar dos instancias locales de MediaWiki y configurar una para que
+   4. [-] Instalar dos instancias locales de MediaWiki y configurar una para que
       use MySQL/MariaDB y otra para que use PostgreSQL
+      1. [X] MySQL
+      2. [ ] PostgreSQL
    5. [X] Verificar el servicio de base de datos maestro y verificar que la
       replicación lleve los datos al servidor esclavo.
 
@@ -20,7 +27,6 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 *** Integrantes:
     + Galeana Araujo Emiliano
     + Gladin García Angel Iván
-    + González Huerta Francisco Javier
     + Vazquez Rizo Paola
 
 ** Introducción
@@ -69,157 +75,221 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
    5. pgAdmin4
 
 ** Instalación
-   Después de unos problemas técnicos con nuestra instancia de AWS, replicamos el
-   proyecto en un servidor que compramos.
+   Después de unos problemas técnicos con nuestra instancia de AWS, y conflictos
+   en la comunicación del equipo. Replicamos el proyecto en un par de  servidores
+   que compramos. Dichos servidores están alojados en [[https://www.digitalocean.com/][Digital Ocean]] y corren 
+   sobre =Ubuntu 16.04.6 (LTS) x64=. Necesitamos dos servidores, pues uno hará la
+   función de 'Master' y el otro la función de 'Slave'.
 
-   Lo primero en hacer es instalar MySQL
-
-   #+begin_src sh :exports code
-   sudo apt-get install mysql-server mysql-client
-   #+end_src sh
-
-   Así como apache2
-
-   #+begin_src sh :exports code
-   sudo apt-get install apache2 
-   #+end_src sh
-
-   MariaDB
-
-   #+begin_src sh :exports code
-   sudo apt-get install mariadb-server
-   #+end_src sh
-
-   Y phpMySQL
-
-   #+begin_src sh :exports code
-   sudo apt-get install php php-mysql libapache2-mod-php php-xml php-mbstring
-   #+end_src
-
-   mediaWiki también lo vamos a instalar, pero de una manera distinta.
-
-   #+begin_src sh :exports code
-   wget https://releases.wikimedia.org/mediawiki/1.34/mediawiki-1.34.2.tar.gz
-   #+end_src sh
+   Las direcciones de dichos servidores son las siguientes:
    
-   Una vez descargado el =.tar.gz=, lo descomprimimos.
+   + Master: [104.248.53.119]
+   + Slave:  [104.248.120.69]
 
-   #+begin_src sh :exports code
-   tar -xvf mediawiki-1.34.2.tar.gz
-   #+end_src
+*** Servidores:
 
-   Procedemos a crear una carpeta en =/var/= para =mediaWiki=, y movemos la 
-   carpeta que se descomprimió a la nueva carpeta.
+    La conexión a los servidores se hace mediante =ssh= de la siguiente manera:
+    
+    #+begin_src sh :exports code
+    ssh root@<SERVIDOR>
+    #+end_src
 
-   #+begin_src sh :exports code
-   mkdir /var/lib/mediawiki
-   mv mediawiki-1.34.2 /var/lib/mediawiki/
-   #+end_src
+    Donde =<SERVIDOR>= es alguna dirección de las mencionadas anteriormente.
+
+    La clave para acceder a dichos servidores no la pondremos en el reporte, por
+    cuestiones de seguridad, sin embargo, en caso de ser requerida se pueden 
+    poner en contacto con algún integrante del equipo para brindarla.
+
+*** Paquetes necesarios
+
+    En esta sección listaremos los paquetes y su manera de instalación.
+
+    Antes de iniciar cualquier cosa, vamos a actualizar.
+
+    #+begin_src sh :exports code
+    apt update && apt dist-upgrade
+    #+end_src
+    
+    Lo primero en instalar será MySQL, es importante hacerlo tanto en el servidor
+    esclavo, como en el maestro
+    
+    #+begin_src sh :exports code
+    apt-get install -y mysql-server
+    #+end_src
+
+    La bandera =-y= es solamente para responder =yes= a cualquier pregunta que se
+    nos haga a la hora de la instalación.
+
+*** Servidor Maestro
+
+    Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en 
+    la sección de /Configuración/.
+
+    #+begin_src sh :exports code
+    vi /etc/mysql/mysql.conf.d/mysql.cnf
+    #+end_src sh
+
+    Una vez editado, procedemos a reiniciar MySQL
+
+    #+begin_src sh :exports code
+    service mtysql restart
+    #+end_src sh
+
+    Ahora procedemos a acceder a MySQL
+
+    #+begin_src sh :exports code
+    mysql -uroot
+    #+end_src sh
+
+    Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
+    de /Configuración/.
+
+     
+*** Servidor Esclavo
+    
+
+     Así como apache2
+
+     #+begin_src sh :exports code
+     sudo apt-get install apache2 
+     #+end_src sh
+
+     MariaDB
+
+     #+begin_src sh :exports code
+     sudo apt-get install mariadb-server
+     #+end_src sh
+
+     Y phpMySQL
+
+     #+begin_src sh :exports code
+     sudo apt-get install php php-mysql libapache2-mod-php php-xml php-mbstring
+     #+end_src
+
+     mediaWiki también lo vamos a instalar, pero de una manera distinta.
+
+     #+begin_src sh :exports code
+     wget https://releases.wikimedia.org/mediawiki/1.34/mediawiki-1.34.2.tar.gz
+     #+end_src sh
    
-   Crearemos la configuració de mysql para =master=. Los cambios hechos se pueden
-   leer en la sección de =Configuración=.
+     Una vez descargado el =.tar.gz=, lo descomprimimos.
 
-   Hacemos una liga para =mediaWiki=.
+     #+begin_src sh :exports code
+     tar -xvf mediawiki-1.34.2.tar.gz
+     #+end_src
 
-   #+begin_src sh :exports code
-   ln -s /var/lib/mediawiki/ /var/www/html/mediawiki
-   #+end_src
+     Procedemos a crear una carpeta en =/var/= para =mediaWiki=, y movemos la 
+     carpeta que se descomprimió a la nueva carpeta.
 
-   Habilitamos módulos de php con =phpenmod=. Y reiniciamos =apache2=. La última
-   línea solo es para checar el estado de =apache2=.
-
-   #+begin_src sh :exports code
-   phpenmod mbstring
-   phpenmod xml
-   systemctl restart apache2
-   systemctl status apache2
-   #+end_src
-
-   Copiamos ca configuración para =mediaWiki=.
-
-   #+begin_src sh :exports code
-   cp /etc/apache2/sites-available/000-default.conf  /etc/apache2/sites-available/mediawiki.conf
-   #+end_src
-
-TODO: qué cambios tiene el archivo de arriba
-
-   Por último cargamos la nueva configuración y quitamos la anterior. Reiniciamos
-   apache y verificamos.
-
-   #+begin_src sh :exports code
-   a2ensite mediawiki.conf 
-   a2dissite 000-default.conf 
-   systemctl reload apache2
-   systemctl status apaeche2
-   #+end_src 
-
-TODO: ¿Por qué hay un mediaWiki2?
-
-   Lo siguiente es cargar las credenciales de la base de datos que creamos 
-   anteriormente para que =mediaWiki= pueda reconocerlas. El archivo se llama
-   =LocalSettings.php= y se encuentra en =/var/www/html/mediaWiki/mediaWiki-1.34.2=.
-
-   Esto implica dar permisos =600= al archivo y cambiar al dueño.
-
-TODO: ¿Para qué necesitamos python?
-
-   Instalaremos python, postgres y unas bibliotecas:
-
-   #+begin_src sh :export code
-   apt install -y python3-pip
-   apt install build-essential libssl-dev libffi-dev python3-dev
-   apt install postgresql postgresql-contrib
-   apt install libgmp3-dev libpq-dev libapache2-mod-wsgi-py3
-   pyton3 -m pip install wheel
-   #+end_src
-
-   Creamos un entorno de python, y ahí
+     #+begin_src sh :exports code
+     mkdir /var/lib/mediawiki
+     mv mediawiki-1.34.2 /var/lib/mediawiki/
+     #+end_src
    
-   #+begin_src sh :export code
-   wget https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v3.4/pip/pgadmin4-3.4-py2.py3-none-any.whl
-   #+end_src
+     Crearemos la configuració de mysql para =master=. Los cambios hechos se pueden
+     leer en la sección de =Configuración=.
 
-   Por último 
+     Hacemos una liga para =mediaWiki=.
 
-   #+begin_src sh :export code
-   pip install pgadmin4-1.4-py2.py3-none-any.whl
-   #+end_src
+     #+begin_src sh :exports code
+     ln -s /var/lib/mediawiki/ /var/www/html/mediawiki
+     #+end_src
 
-   Y habilitamos el modo de servidor:
+     Habilitamos módulos de php con =phpenmod=. Y reiniciamos =apache2=. La última
+     línea solo es para checar el estado de =apache2=.
 
-   #+begin_src sh :export code
-   cd environments/my_env/lib/python3.6/site-packages/
-   echo "SERVER_MODE = False" >> pgadmin4/config_local.py
-   #+end_src
+     #+begin_src sh :exports code
+     phpenmod mbstring
+     phpenmod xml
+     systemctl restart apache2
+     systemctl status apache2
+     #+end_src
+
+     Copiamos ca configuración para =mediaWiki=.
+
+     #+begin_src sh :exports code
+     cp /etc/apache2/sites-available/000-default.conf  /etc/apache2/sites-available/mediawiki.conf
+     #+end_src
+
+  TODO: qué cambios tiene el archivo de arriba
+
+     Por último cargamos la nueva configuración y quitamos la anterior. Reiniciamos
+     apache y verificamos.
+
+     #+begin_src sh :exports code
+     a2ensite mediawiki.conf 
+     a2dissite 000-default.conf 
+     systemctl reload apache2
+     systemctl status apaeche2
+     #+end_src 
+
+  TODO: ¿Por qué hay un mediaWiki2?
+
+     Lo siguiente es cargar las credenciales de la base de datos que creamos 
+     anteriormente para que =mediaWiki= pueda reconocerlas. El archivo se llama
+     =LocalSettings.php= y se encuentra en =/var/www/html/mediaWiki/mediaWiki-1.34.2=.
+
+     Esto implica dar permisos =600= al archivo y cambiar al dueño.
+
+  TODO: ¿Para qué necesitamos python?
+
+     Instalaremos python, postgres y unas bibliotecas:
+
+     #+begin_src sh :export code
+     apt install -y python3-pip
+     apt install build-essential libssl-dev libffi-dev python3-dev
+     apt install postgresql postgresql-contrib
+     apt install libgmp3-dev libpq-dev libapache2-mod-wsgi-py3
+     pyton3 -m pip install wheel
+     #+end_src
+
+     Creamos un entorno de python, y ahí
    
+     #+begin_src sh :export code
+     wget https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v3.4/pip/pgadmin4-3.4-py2.py3-none-any.whl
+     #+end_src
+
+     Por último 
+
+     #+begin_src sh :export code
+     pip install pgadmin4-1.4-py2.py3-none-any.whl
+     #+end_src
+
+     Y habilitamos el modo de servidor:
+
+     #+begin_src sh :export code
+     cd environments/my_env/lib/python3.6/site-packages/
+     echo "SERVER_MODE = False" >> pgadmin4/config_local.py
+     #+end_src
+   
+     Para pgadmin, creamos 
 
 
 
+     #+begin_src sh :exports code
+     sudo vi /etc/mysql/my.cnf
+     #+end_src sh
 
-   #+begin_src sh :exports code
-   sudo vi /etc/mysql/my.cnf
-   #+end_src sh
+     Una vez guardamos los cambios, necesitamos aplicar los cambios, esto lo 
+     podemos hacer con el siguiente comando.
 
-   Una vez guardamos los cambios, necesitamos aplicar los cambios, esto lo 
-   podemos hacer con el siguiente comando.
+     #+begin_src sh :exports code
+     sudo service mysql restart
+     #+end_src sh
 
-   #+begin_src sh :exports code
-   sudo service mysql restart
-   #+end_src sh
+     Ahora necesitamos acceder a la consola de =MySQL=. Los cambios se pueden leer
+     en la sección de =Configuración=.
 
-   Ahora necesitamos acceder a la consola de =MySQL=. Los cambios se pueden leer
-   en la sección de =Configuración=.
+     #+begin_src sh :exports code
+     mysql -u root -p
+     #+end_src sh
 
-   #+begin_src sh :exports code
-   mysql -u root -p
-   #+end_src sh
+     Abrimos una nueva ventana para exportar nuestra base de datos. Lo hacemos así
+     pues al estar nuestra base bloqueada, queremos que se mantenga de esa manera.
 
-   Abrimos una nueva ventana para exportar nuestra base de datos. Lo hacemos así
-   pues al estar nuestra base bloqueada, queremos que se mantenga de esa manera.
-
-   #+begin_src sh :exports code
-   mysqldump -u root -o --opt newdatabase > newdatabase.sql
-   #+end_src sh
+     #+begin_src sh :exports code
+     mysqldump -u root -o --opt newdatabase > newdatabase.sql
+     #+end_src sh
    
    
 *** Sábado 13 de Junio de 2020
@@ -268,20 +338,42 @@ TODO: ¿Para qué necesitamos python?
     sudo apt-get install <paquete>
     #+end_src sh
 
-    A excepción de =mediaWiki=, que ya explicamos cómo se descarga.
+*** Configuración de 'Master'
+
+    En el archivo =/etc/mysql/mysql.conf.d/mysqld.cnf= vamos a modificar el 
+    =bind-address=, por lo que basta con encontrar dicha línea y escribir lo 
+    siguiente.
+
+    #+begin_src sh :exports code
+    bind-address          = 104.248.53.119
+    #+end_src sh
+
+    En el mismo archivo, también tenemos que descomentar las líneas de
+    =server-id= y =log-bin=.
 
 *** Consola de MySQL
 
     Lo primero es crear un usuario:
 
     #+begin_src sh :exports code
-    CREATE USER 'mediawiki'@'localhost' IDENTIFIED BY 'alias';
+    create user 'repl'@'%' identified by 'slavepassword';
+    #+end_src sh
+
+    El siguiente comando es para crear la replicación
+
+    #+begin_src sh :exports code
+    grant replication slave on *.* to 'repl'@'%';
     #+end_src sh
     
+    Para probar lo hecho anteriormente
     Creamos la base de datos.
 
     #+begin_src sh :exports code
-    CREATE DATABASE mediawiki_db;
+    create database pets;
+    create database pets.cats (name varchar(20));
+    insert into pets.cats values ('fluffy');
+    select * from pets.cats;
+    exit
     #+end_src
 
     Concedemos privilegios:
@@ -292,31 +384,6 @@ TODO: ¿Para qué necesitamos python?
     
    
 **** TODO cambiar los datos de arribita
-
-*** Configuración de 'Master'
-
-    En el archivo =my.cnf= buscar lo siguiente =bind-address= y reemplazarla la 
-    IP por la IP del servidor.
-
-    Tenemos que descomentar la línea que comienza con =server-id=, y asignar un 
-    número, este número puede ser cualquiera, aunque hay ciertas recomendaciones,
-    nosotros usaremos el número =1=. quedando la línea de la siguienge manera
-
-    #+begin_src sh :exports code
-    server-id            = 1
-    #+end_src sh
-
-    Lo siguiente que tenemos que modificar es =log_bin=. Que es de donde 'slave'
-    va a copiar todos los cambios registrados en el log. Basta con solo 
-    descomentar la línea. 
-
-    Por último tenemos que designar la base de datos que vamos a replicar. Es 
-    importante notar que podemos replicar varias bases de datos solamente 
-    repitiendo la siguiente línea.
-
-    #+begin_src sh :exports code
-    binlog_do_db         = <nombre base de datos>
-    #+end_src sh
 ** Errores frecuentes.
    El mayor error que tuvimos (Que fue nuestra culpa) fue que no recordábamos el
    passphrase para conectarnos, pero revisando nuestras conversaciones, lo
