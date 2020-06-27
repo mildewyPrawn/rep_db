@@ -428,14 +428,10 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
 *** Configuración de 'phpMyAdmin'
 
-    Vamos a crear un usuario y una contrseña, vamos a condecer los privilegios
-    necesarios y por último, nos salimos del shell de =MySQL=.
-
-    #+begin_src sh :exports code
-    CREATE USER 'repl'@'localhost' IDENTIFIED BY 'slavepassword';
-    GRANT ALL PRIVILEGES ON *.* TO 'repl'@'localhost' WITH GRANT OPTION;
-    exit
-    #+end_src
+    Podermos crear un usuario y una contrseña nuevos, pero vamos a usar los 
+    mismos que para la base de datos de =MySQL= vamos a condecer los privilegios
+    necesarios y por último, nos salimos del shell de =MySQL=. La cuál se 
+    encuentra arriba.
     
     Ahora podemos accesar a la interfaz de web visitando =http://<dominio>/phpmyadmin=
 
@@ -472,9 +468,13 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
    AWS). fue que no recordábamos el passphrase para conectarnos.
 
    Ya trabajando en =Digital Ocean= lo más complicado fue vimos fue intentar 
-   realizarlo con =postgres=, de echo, tuvimos que reiniciar todo un par de veces,
-   pues en un inicio pensamos en ayudarnos con python, pero vimos que por ahí no
-   iba. También nos ocurrió que
+   realizarlo con =postgres=, pero en la entrega del video ya estará. Otro error
+   Otro error que tuvimos fue que al momento de querer realizar una configuración
+   , la documentación de =MySQL= dice que hay que editar el siguiente archivo
+   =Domain Forwarding=, pero tuvimos problemas con eso y buscando, encontramos en
+   un foro que para versiones recientes, había que modificar el siguiente archivo
+   =/etc/mysql/mysql.conf.d/mysqld.cnf=, fue de las cosas más problemáticas que
+   tuvimos.   
 
 ** Bibliografía
    
