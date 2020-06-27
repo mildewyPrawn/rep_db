@@ -432,8 +432,8 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     necesarios y por último, nos salimos del shell de =MySQL=.
 
     #+begin_src sh :exports code
-    CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
-    GRANT ALL PRIVILEGES ON *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
+    CREATE USER 'repl'@'localhost' IDENTIFIED BY 'slavepassword';
+    GRANT ALL PRIVILEGES ON *.* TO 'repl'@'localhost' WITH GRANT OPTION;
     exit
     #+end_src
     
