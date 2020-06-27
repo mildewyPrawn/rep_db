@@ -141,7 +141,7 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     siguiente
 
     #+begin_src sh :exports code
-    install phpmyadmin php-mbstring php-gettext
+    apt-get install phpmyadmin php-mbstring php-gettext
     #+end_src    
 
 *** Servidor Maestro
@@ -278,13 +278,22 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     sudo systemctl restart apache2
     #+end_src
 
+    Ahora queremos configurar una contraseña para un usuario dedicado en =MySQL=
+    Las configuraciones se pueden ver en /Configuración phpMyAdmin/. Es 
+    importante recalcar que esto debe hacerse tanto en 'Master' como en 'Slave'.
+
+    #+begin_src sh :exports code
+    sydo -u mysql-p
+    #+end_src
+    
+
 *** Verificación
     
     Podemos ver que cada que escribimos en el maestro, se escribe automáticamente
     en el esclavo, esto nos habla de una replicación instantánea.
 
 ** Configuracion
-   
+
 *** Instalación
     En general para cualquier cosa que descarguemos sirve el comando
 
@@ -417,7 +426,18 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     La contraseña de =mediaWiki= no la pondremos en este reporte, pero de nuevo,
     de ser requerida, cualquier miembro del equipo puede brindarla.
 
-*** 
+*** Configuración de 'phpMyAdmin'
+
+    Vamos a crear un usuario y una contrseña, vamos a condecer los privilegios
+    necesarios y por último, nos salimos del shell de =MySQL=.
+
+    #+begin_src sh :exports code
+    CREATE USER 'sammy'@'localhost' IDENTIFIED BY 'password';
+    GRANT ALL PRIVILEGES ON *.* TO 'sammy'@'localhost' WITH GRANT OPTION;
+    exit
+    #+end_src
+    
+    Ahora podemos accesar a la interfaz de web visitando =http://<dominio>/phpmyadmin=
 
 ** Ligas de acceso
 
@@ -433,6 +453,17 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 *** Servidor Esclavo
     
    + Podemos ver la instancia de =phpMyAdmin= en [[http://104.248.120.69/phpmyadmin/][phpMyAdmin]]
+     
+** Certificado SSL
+
+   Parece que necesitamos un nombre de dominio para poder realizar esta parte, 
+   sin embargo, suponiendo que lo tenemos, bastaría con realizar los siguientes
+   comandos.
+
+   #+begin_src sh :exports code
+   apt-get install certbot python-certbot-apache 
+   sudo certbot --apache
+   #+end_src
 
 ** Errores frecuentes.
    El mayor error que tuvimos fue la falta de comunicación, en un inicio, no 
