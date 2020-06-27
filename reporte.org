@@ -1,4 +1,3 @@
-
 * Replicación de bases de datos
 ** Cosas por hacer
    1. [-] Instalar MySQL/MariaDB y PostgreSQL en un equipo que será el servidor
@@ -120,13 +119,32 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     La bandera =-y= es solamente para responder =yes= a cualquier pregunta que se
     nos haga a la hora de la instalación.
 
+
+    Por cuestiones de tiempo y optimización, optamos por utilizar =Tasakel=, 
+    pues ya viene con todo listo para una rápida instalación. De esa manera nos
+    evitamos instalar /Apache, MySQL, PHP/ por separado. 
+    
+    Utilizaremos =Taskel= para instalar =LAMP Stak= con los siguientes comandos.
+
+    #+begin_src sh :exports code
+    apt install tasksel
+    tasksel install lamp-server
+    #+end_src
+
+    Necesitamos =mediaWiki=, el cuál vamos a instalar de la siguiente manera
+
+    #+begin_src sh :exports code
+    cd /var/www/html/foo
+    sudo curl -O https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz
+    #+end_src
+
 *** Servidor Maestro
 
     Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en 
     la sección de /Configuración/.
 
     #+begin_src sh :exports code
-    vi /etc/mysql/mysql.conf.d/mysql.cnf
+    vi /etc/mysql/mysql.conf.d/mysqld.cnf
     #+end_src sh
 
     Una vez editado, procedemos a reiniciar MySQL
@@ -144,190 +162,98 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
     de /Configuración/.
 
-     
+    Hacemos un sanpshot usando  =mysqldump= con el siguiente comando
+
+   #+begin_src sh :exports code
+   mysqldump -uroot --all-databases --master-data > masterdump.sql
+   #+end_src
+
+   Y se lo mandamos al esclavo
+
+   #+begin_src sh :exports code
+   scp masterdump.sql 104.248.120.69:
+   #+end_src
+
 *** Servidor Esclavo
+    Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en 
+    la sección de /Configuración/.
+
+    #+begin_src sh :exports code
+    vi /etc/mysql/mysql.conf.d/mysqld.cnf
+    #+end_src sh
     
+    Una vez editado, procedemos a reiniciar MySQL
 
-     Así como apache2
+    #+begin_src sh :exports code
+    service mtysql restart
+    #+end_src sh
 
-     #+begin_src sh :exports code
-     sudo apt-get install apache2 
-     #+end_src sh
+    Ahora procedemos a acceder a MySQL
 
-     MariaDB
+    #+begin_src sh :exports code
+    mysql -uroot
+    #+end_src sh
 
-     #+begin_src sh :exports code
-     sudo apt-get install mariadb-server
-     #+end_src sh
+    Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
+    de /Configuración/.
 
-     Y phpMySQL
+    Ahora procedemos a restaurar la base de datos del maestro. Y entramos de 
+    nuevo a la consola (Ver /Configuración/).
 
-     #+begin_src sh :exports code
-     sudo apt-get install php php-mysql libapache2-mod-php php-xml php-mbstring
-     #+end_src
+    #+begin_src sh :exports code
+    mysql -uroot < masterdump.sql
+    mysql -uroot
+    #+end_src
 
-     mediaWiki también lo vamos a instalar, pero de una manera distinta.
+*** Virtual Hosts
+    
+    Vamos a configurar nuestro host de distintas maneras, por lo que lo 
+    reemplazamos con
 
-     #+begin_src sh :exports code
-     wget https://releases.wikimedia.org/mediawiki/1.34/mediawiki-1.34.2.tar.gz
-     #+end_src sh
-   
-     Una vez descargado el =.tar.gz=, lo descomprimimos.
+    #+begin_src sh :exports code
+    cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/foo.conf
+    #+end_src
 
-     #+begin_src sh :exports code
-     tar -xvf mediawiki-1.34.2.tar.gz
-     #+end_src
+    Creamos subdirectorios con
 
-     Procedemos a crear una carpeta en =/var/= para =mediaWiki=, y movemos la 
-     carpeta que se descomprimió a la nueva carpeta.
+    #+begin_src sh :exports code
+    mkdir -p /var/www/html/foo/{public_html, logs}
+    #+end_src
 
-     #+begin_src sh :exports code
-     mkdir /var/lib/mediawiki
-     mv mediawiki-1.34.2 /var/lib/mediawiki/
-     #+end_src
-   
-     Crearemos la configuració de mysql para =master=. Los cambios hechos se pueden
-     leer en la sección de =Configuración=.
+    Les damos permisos
 
-     Hacemos una liga para =mediaWiki=.
+    #+begin_src sh :exports code
+    sudo chmod -R 755 /var/www/html/foo/public_html
+    #+end_src
 
-     #+begin_src sh :exports code
-     ln -s /var/lib/mediawiki/ /var/www/html/mediawiki
-     #+end_src
+    Deshabilitamos el host anterior y actualizamos =apache= con lo siguiente
 
-     Habilitamos módulos de php con =phpenmod=. Y reiniciamos =apache2=. La última
-     línea solo es para checar el estado de =apache2=.
+    #+begin_src sh :exports code
+    sudo a2dissite 000-default.conf
+    systemctl reload apache2
+    #+end_src
 
-     #+begin_src sh :exports code
-     phpenmod mbstring
-     phpenmod xml
-     systemctl restart apache2
-     systemctl status apache2
-     #+end_src
+*** MediaWiki
+    
+    Ver la sección /Paquetes necesarios/ en este mismo apartado para ver el 
+    proceso de instalación.
 
-     Copiamos ca configuración para =mediaWiki=.
+    Una vez instalado, procedemos a descomprimir el paquete.
 
-     #+begin_src sh :exports code
-     cp /etc/apache2/sites-available/000-default.conf  /etc/apache2/sites-available/mediawiki.conf
-     #+end_src
+    #+begin_src sh :exports code
+    sudo tar -xvf mediawiki-1.33.0.tar.gz
+    #+end_src sh
 
-  TODO: qué cambios tiene el archivo de arriba
+    Ahora, moveremos el archivo descomprimido =mediawiki-1.33.0= al directorio 
+    =mediawiki=.
 
-     Por último cargamos la nueva configuración y quitamos la anterior. Reiniciamos
-     apache y verificamos.
+    #+begin_src sh :exports code
+    sudo mv mediawiki-1.33.0/ public_html/mediawiki/
+    #+end_src sh
 
-     #+begin_src sh :exports code
-     a2ensite mediawiki.conf 
-     a2dissite 000-default.conf 
-     systemctl reload apache2
-     systemctl status apaeche2
-     #+end_src 
+    Como MediaWiki tiene que comunicarse con una base de datos para guardar la
+    información, vamos a crear una. (Ver /Configuración de MediaWiki/).
 
-  TODO: ¿Por qué hay un mediaWiki2?
-
-     Lo siguiente es cargar las credenciales de la base de datos que creamos 
-     anteriormente para que =mediaWiki= pueda reconocerlas. El archivo se llama
-     =LocalSettings.php= y se encuentra en =/var/www/html/mediaWiki/mediaWiki-1.34.2=.
-
-     Esto implica dar permisos =600= al archivo y cambiar al dueño.
-
-  TODO: ¿Para qué necesitamos python?
-
-     Instalaremos python, postgres y unas bibliotecas:
-
-     #+begin_src sh :export code
-     apt install -y python3-pip
-     apt install build-essential libssl-dev libffi-dev python3-dev
-     apt install postgresql postgresql-contrib
-     apt install libgmp3-dev libpq-dev libapache2-mod-wsgi-py3
-     pyton3 -m pip install wheel
-     #+end_src
-
-     Creamos un entorno de python, y ahí
-   
-     #+begin_src sh :export code
-     wget https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v3.4/pip/pgadmin4-3.4-py2.py3-none-any.whl
-     #+end_src
-
-     Por último 
-
-     #+begin_src sh :export code
-     pip install pgadmin4-1.4-py2.py3-none-any.whl
-     #+end_src
-
-     Y habilitamos el modo de servidor:
-
-     #+begin_src sh :export code
-     cd environments/my_env/lib/python3.6/site-packages/
-     echo "SERVER_MODE = False" >> pgadmin4/config_local.py
-     #+end_src
-   
-     Para pgadmin, creamos 
-
-
-
-     #+begin_src sh :exports code
-     sudo vi /etc/mysql/my.cnf
-     #+end_src sh
-
-     Una vez guardamos los cambios, necesitamos aplicar los cambios, esto lo 
-     podemos hacer con el siguiente comando.
-
-     #+begin_src sh :exports code
-     sudo service mysql restart
-     #+end_src sh
-
-     Ahora necesitamos acceder a la consola de =MySQL=. Los cambios se pueden leer
-     en la sección de =Configuración=.
-
-     #+begin_src sh :exports code
-     mysql -u root -p
-     #+end_src sh
-
-     Abrimos una nueva ventana para exportar nuestra base de datos. Lo hacemos así
-     pues al estar nuestra base bloqueada, queremos que se mantenga de esa manera.
-
-     #+begin_src sh :exports code
-     mysqldump -u root -o --opt newdatabase > newdatabase.sql
-     #+end_src sh
-   
-   
-*** Sábado 13 de Junio de 2020
-    Se instaló PHP, MySQL y apache2 en una máquna que es el servidor maestro y en
-    el servidor esclavo. Las siguientes imágenes muestran lo anterior.
-
-    [[./img/php_instalacion.png][php_instalacion.png]]
-
-    [[./img/apache_instalacion.png][apache_instalacion.png]]
-
-    [[./img/Sm.png][Sm.png]]
-
-*** Domingo 14 de Junio de 2020
-    Se instaló phpMyAdmin y PGAdmin4 en las mismas máquinas. Las siguientes
-    imágenes muestran lo anterior.
-
-    Para este punto solo faltaría realizar la instalación de MediaWiki y terminar
-    la configuración.
-
-    [[./img/pgmyadmin4.png][pgmyadmin4.png]]
-
-    [[./img/Phpmyadmin.png][Phpmyadmin.png]]
-
-*** Lunes 15 de Junio de 2020
-    Se instaló MediaWiki, tanto en postGres como en MySQL. Ambos corren y se
-    pueden monitorear. Solo falta hacer la replicación (La parte importante).
-
-    Otra cosa que faltaría realizar es portar todo al server de Amazon, pues
-    recordemos que todo se ha ido realizando en nuestras máquinas físicas.
-
-    Las siguientes imágenes son del funcionamiento de Postgres y MySQL.
-
-    [[./img/mediawikipost.png][mediawikipost.png]]
-
-    [[./img/mediawikimysql.png][mediawikimysql.png]]
-
-*** Sábado 20 de Junio de 2020
-    Se subió el proyecto funcional y corre en el servidor de Amazon.
 
 ** Configuracion
    
@@ -337,6 +263,11 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     #+begin_src sh :exports code
     sudo apt-get install <paquete>
     #+end_src sh
+
+    =mediaWiki= se va a instalar con el siguiente comando.
+    #+begin_src sh :exports code
+    sudo curl -O https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz    
+    #+end_src sh    
 
 *** Configuración de 'Master'
 
@@ -351,39 +282,115 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     En el mismo archivo, también tenemos que descomentar las líneas de
     =server-id= y =log-bin=.
 
-*** Consola de MySQL
+**** Consola de MySQL
 
-    Lo primero es crear un usuario:
+     Lo primero es crear un usuario:
 
-    #+begin_src sh :exports code
-    create user 'repl'@'%' identified by 'slavepassword';
-    #+end_src sh
+     #+begin_src sh :exports code
+     create user 'repl'@'%' identified by 'slavepassword';
+     #+end_src sh
 
-    El siguiente comando es para crear la replicación
+     El siguiente comando es para crear la replicación
 
-    #+begin_src sh :exports code
-    grant replication slave on *.* to 'repl'@'%';
-    #+end_src sh
+     #+begin_src sh :exports code
+     grant replication slave on *.* to 'repl'@'%';
+     #+end_src sh
     
-    Para probar lo hecho anteriormente
-    Creamos la base de datos.
+     Para probar lo hecho anteriormente
+     Creamos la base de datos.
+
+     #+begin_src sh :exports code
+     create database pets;
+     create database pets.cats (name varchar(20));
+     insert into pets.cats values ('fluffy');
+     select * from pets.cats;
+     exit
+     #+end_src
+
+*** Configuración de 'Slave'
+
+    En el archivo =/etc/mysql/mysql.conf.d/mysqld.cnf= vamos a modificar el 
+    =bind-address=, por lo que basta con encontrar dicha línea y escribir lo 
+    siguiente.
+    
+    #+begin_src sh :exports code
+    bind-address          = 104.248.53.119
+    #+end_src sh
+
+    En el mismo archivo, también tenemos que descomentar las líneas de
+    =server-id= y =log-bin=. El =server-id= tiene que quedar de la siguiente
+    manera.
 
     #+begin_src sh :exports code
-    create database pets;
-    create database pets.cats (name varchar(20));
-    insert into pets.cats values ('fluffy');
-    select * from pets.cats;
+    server-id             = 2
+    #+end_src sh    
+
+**** Consola de MySQL
+     
+     Lo siguiente es para ligar al esclavo con el maestro.
+
+    #+begin_src sh :exports code
+    CHANGE MASTER TO
+    MASTER_HOST='104.248.53.119',
+    MASTER_USER='repl',
+    MASTER_PASSWORD='slavepassword';
     exit
     #+end_src
 
-    Concedemos privilegios:
+     Con los siguientes comandos vamos a restaurar la base de datos del maestro.
 
     #+begin_src sh :exports code
-    GRANT ALL ON mediawiki_db.* TO 'mediawiki'@'localhost';
+    start slave;
     #+end_src
     
-   
-**** TODO cambiar los datos de arribita
+    Podemos ver el estado con el siguiente comando
+
+    #+begin_src sh :exports code
+    show slave status\G;
+    #+end_src
+    
+    Y verificar que en efecto, la replicación está lista.
+
+*** Configuración de 'MediaWiki'
+
+    Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
+
+    #+begin_src sh :exports code
+    sudo mysql -u root -p
+    #+end_src sh
+
+    Ahora creamos una base de datos y un usuario. la base de datos llevará por 
+    nombre =my_wiki=, el usuario será =media_wiki= y la contraseña no la 
+    pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
+    cualquier miembro del equipo.
+
+    #+begin_src sh :exports code
+    CREATE DATABASE my_wiki;
+    CREATE USER 'media_wiki'@'localhost' IDENTIFIED BY 'password';
+    GRANT ALL ON my_wiki.* TO 'media_wiki'@'localhost' IDENTIFIED BY 'password';
+    #+end_src sh
+    
+    Una vez hecho lo anterior, ahora si, procedemos a configurar =mediaWiki=.
+
+    Vamos a ir a la url =foo/mediawiki/= y ahí encontraremos un link con la 
+    leyenda: =Please set up the wiki first=, vamos a seleccionar el nombre de la 
+    base y la contraseña que definimos anteriormente. Una vez terminada la 
+    configuración =mediaWiki= va a crear un archivo (=LocalSettings.php=), el 
+    cual contiene las configuraciones de la instalación. 
+
+    Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
+    restringir el acceso de la siguiente manera.
+
+    #+begin_src sh :exports code
+    mv LocalSettings.php /var/www/html/foo/public_html/mediawiki
+    sudo chmod 700 /var/www/html/example.com/public_html/media/wiki/LocalSettings.php
+    #+end_src sh
+
+    La contraseña de =mediaWiki= no la pondremos en este reporte, pero de nuevo,
+    de ser requerida, cualquier miembro del equipo puede brindarla.
+
+*** 
+
 ** Errores frecuentes.
    El mayor error que tuvimos (Que fue nuestra culpa) fue que no recordábamos el
    passphrase para conectarnos, pero revisando nuestras conversaciones, lo
