@@ -70,8 +70,7 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
    1. PHP 7.3.14-1
    2. MySQL 8.0.20
    3. apache2 2.4.29
-   4. phpMyAdmin
-   5. pgAdmin4
+   4. phpMyAdmin 
 
 ** Instalación
    Después de unos problemas técnicos con nuestra instancia de AWS, y conflictos
@@ -137,6 +136,13 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     cd /var/www/html/foo
     sudo curl -O https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz
     #+end_src
+
+    Para usar phpMyAdmin, necesitamos descargarlo, lo podemos hacer con lo 
+    siguiente
+
+    #+begin_src sh :exports code
+    install phpmyadmin php-mbstring php-gettext
+    #+end_src    
 
 *** Servidor Maestro
 
@@ -254,6 +260,28 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
     Como MediaWiki tiene que comunicarse con una base de datos para guardar la
     información, vamos a crear una. (Ver /Configuración de MediaWiki/).
 
+*** phpMyAdmin
+
+    Ver la sección /Paquetes necesarios/ en este mismo apartado para ver el 
+    proceso de instalación.
+    
+    El proceso de instalación, carga la configuración en =/etc/apache2/conf-enabled/=
+    Necesitamos habilitar =mbstring= de la siguiente manera. 
+
+    #+begin_src sh :exports code
+    sudo phpenmod mbstring
+    #+end_src
+
+    Procedemos a reiniciar apache para guardar los cambios.
+
+    #+begin_src sh :exports code
+    sudo systemctl restart apache2
+    #+end_src
+
+*** Verificación
+    
+    Podemos ver que cada que escribimos en el maestro, se escribe automáticamente
+    en el esclavo, esto nos habla de una replicación instantánea.
 
 ** Configuracion
    
@@ -391,14 +419,37 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
 *** 
 
+** Ligas de acceso
+
+   Por el momento, por falta de comunicación, solo tenemos una instancia de
+   =mediaWiki= con una base de datos, por lo que nos haría falta crearla con
+   =postgres=.
+
+*** Servidor Maestro
+
+   + Podemos ver una instancia de =mediaWiki= en [[http://104.248.53.119/mediawiki/][MediaWiki - MySQL]]
+   + Podemos ver la instancia de =phpMyAdmin= [[http://104.248.53.119/phpmyadmin/][phpMyAdmin]]
+
+*** Servidor Esclavo
+    
+   + Podemos ver la instancia de =phpMyAdmin= en [[http://104.248.120.69/phpmyadmin/][phpMyAdmin]]
+
 ** Errores frecuentes.
-   El mayor error que tuvimos (Que fue nuestra culpa) fue que no recordábamos el
-   passphrase para conectarnos, pero revisando nuestras conversaciones, lo
-   pudimos recuperar y ya logramos acceder al servidor.
+   El mayor error que tuvimos fue la falta de comunicación, en un inicio, no 
+   pensamos que el hecho de que solo una persona tuviera los archivos de 
+   configuración nos perjudicaría. Un error que tuvimos (Cuando lo hicimos con 
+   AWS). fue que no recordábamos el passphrase para conectarnos.
 
-   Otro error que tuvimos fue al momento de hacerlo en nuestra computadora, pues
-   las versiones de php y phpMyAdmin tenían conflictos, con un vistazo en
-   internet pudimos solucionarlo, aparte de que a algunos de nosotros ya nos
-   había ocurrido algo parecido en otra materia.
+   Ya trabajando en =Digital Ocean= lo más complicado fue vimos fue intentar 
+   realizarlo con =postgres=, de echo, tuvimos que reiniciar todo un par de veces,
+   pues en un inicio pensamos en ayudarnos con python, pero vimos que por ahí no
+   iba. También nos ocurrió que
 
-
+** Bibliografía
+   
+   + [[https://askubuntu.com/questions/387062/how-to-solve-the-phpmyadmin-not-found-issue-after-upgrading-php-and-apache][problema con phpMyAdmin]]
+   + [[https://www.digitalocean.com/community/tutorials/how-to-install-linux-apache-mysql-php-lamp-stack-on-ubuntu-16-04][Instalación]]
+   + [[https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-phpmyadmin-on-ubuntu-16-04][instalación de phpMyAdmin]]
+   + [[https://www.linode.com/docs/web-servers/lamp/how-to-install-a-lamp-stack-on-ubuntu-18-04/][LAMP Stack]]
+   + [[https://www.linode.com/docs//websites/wikis/install-mediawiki-on-ubuntu-1804/][mediaWiki Ubuntu]]
+   + [[https://www.youtube.com/watch?v=JXDuVypcHNA][Configuración MySQL]]
