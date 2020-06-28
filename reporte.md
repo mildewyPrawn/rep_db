@@ -422,7 +422,9 @@ pondremos, pero en caso de requerirla, de nuevo, se puede contactar a
 cualquier miembro del equipo.
 
 > CREATE DATABASE my<sub>wiki</sub>;
+> 
 > CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+> 
 > GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
