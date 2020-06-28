@@ -196,27 +196,22 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
      vi /etc/mysql/mysql.conf.d/mysqld.cnf
-     #+end_src sh
     
      Una vez editado, procedemos a reiniciar MySQL
     
-     #+begin_src sh :exports code
      service mtysql restart
-     #+end_src sh
     
      Ahora procedemos a acceder a MySQL
     
-     #+begin_src sh :exports code
      mysql -uroot
-     #+end_src sh
     
      Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
      de /Configuración/.
     
      Hacemos un sanpshot usando  =mysqldump= con el siguiente comando
     
-    #+begin_src sh :exports code
-    mysqldump -uroot --all-databases --master-data > masterdump.sql
+
+     mysqldump -uroot --all-databases --master-data > masterdump.sql
 
 Y se lo mandamos al esclavo
 
@@ -231,19 +226,14 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
     vi /etc/mysql/mysql.conf.d/mysqld.cnf
-    #+end_src sh
     
     Una vez editado, procedemos a reiniciar MySQL
     
-    #+begin_src sh :exports code
     service mtysql restart
-    #+end_src sh
     
     Ahora procedemos a acceder a MySQL
     
-    #+begin_src sh :exports code
     mysql -uroot
-    #+end_src sh
     
     Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
     de /Configuración/.
@@ -251,7 +241,6 @@ la sección de *Configuración*.
     Ahora procedemos a restaurar la base de datos del maestro. Y entramos de 
     nuevo a la consola (Ver /Configuración/).
     
-    #+begin_src sh :exports code
     mysql -uroot < masterdump.sql
     mysql -uroot
 
@@ -288,16 +277,13 @@ proceso de instalación.
 
 Una vez instalado, procedemos a descomprimir el paquete.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo tar -xvf mediawiki-1.33.0.tar.gz
-\#+end<sub>src</sub> sh
+
+> sudo tar -xvf mediawiki-1.33.0.tar.gz
 
 Ahora, moveremos el archivo descomprimido `mediawiki-1.33.0` al directorio 
 `mediawiki`.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
-\#+end<sub>src</sub> sh
+> sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
 
 Como MediaWiki tiene que comunicarse con una base de datos para guardar la
 información, vamos a crear una. (Ver *Configuración de MediaWiki*).
@@ -345,14 +331,11 @@ en el esclavo, esto nos habla de una replicación instantánea.
 
 En general para cualquier cosa que descarguemos sirve el comando
 
-\#+begin<sub>src</sub> sh :exports code
-sudo apt-get install <paquete>
-\#+end<sub>src</sub> sh
+> sudo apt-get install <paquete>
 
 `mediaWiki` se va a instalar con el siguiente comando.
-\#+begin<sub>src</sub> sh :exports code
-sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
-\#+end<sub>src</sub> sh    
+
+> sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>
 
 
 <a id="org9a6d270"></a>
