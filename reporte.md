@@ -346,9 +346,7 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-\#+begin<sub>src</sub> sh :exports code
-bind-address          = 104.248.53.119
-\#+end<sub>src</sub> sh
+> bind-address          = 104.248.53.119
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`.
@@ -358,18 +356,14 @@ En el mismo archivo, también tenemos que descomentar las líneas de
     Lo primero es crear un usuario:
     
         create user 'repl'@'%' identified by 'slavepassword';
-        #+end_src sh
         
         El siguiente comando es para crear la replicación
         
-        #+begin_src sh :exports code
         grant replication slave on *.* to 'repl'@'%';
-        #+end_src sh
         
         Para probar lo hecho anteriormente
         Creamos la base de datos.
         
-        #+begin_src sh :exports code
         create database pets;
         create database pets.cats (name varchar(20));
         insert into pets.cats values ('fluffy');
@@ -385,17 +379,13 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-\#+begin<sub>src</sub> sh :exports code
-bind-address          = 104.248.53.119
-\#+end<sub>src</sub> sh
+> bind-address          = 104.248.53.119
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`. El `server-id` tiene que quedar de la siguiente
 manera.
 
-\#+begin<sub>src</sub> sh :exports code
-server-id             = 2
-\#+end<sub>src</sub> sh    
+> server-id             = 2
 
 1.  Consola de MySQL
 
@@ -424,20 +414,16 @@ server-id             = 2
 
 Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo mysql -u root -p
-\#+end<sub>src</sub> sh
+> sudo mysql -u root -p
 
 Ahora creamos una base de datos y un usuario. la base de datos llevará por 
 nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la 
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-\#+begin<sub>src</sub> sh :exports code
-CREATE DATABASE my<sub>wiki</sub>;
-CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-\#+end<sub>src</sub> sh
+> CREATE DATABASE my<sub>wiki</sub>;
+> CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+> GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
@@ -450,10 +436,8 @@ cual contiene las configuraciones de la instalación.
 Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
 restringir el acceso de la siguiente manera.
 
-\#+begin<sub>src</sub> sh :exports code
-mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
-sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
-\#+end<sub>src</sub> sh
+> mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
+> sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
 
 La contraseña de `mediaWiki` no la pondremos en este reporte, pero de nuevo,
 de ser requerida, cualquier miembro del equipo puede brindarla.
