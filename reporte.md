@@ -1,42 +1,45 @@
 
 # Table of Contents
 
-1.  [Replicación de bases de datos](#orgf505f87)
-    1.  [Cosas por hacer](#org054cdbf)
-2.  [Reporte](#orgbc7dc4c)
-        1.  [Integrantes:](#org37d6157)
-    1.  [Introducción](#org95bfcf3)
-    2.  [Instalación](#org5e617cb)
-        1.  [Servidores:](#org41267df)
-        2.  [Paquetes necesarios](#org10f7af6)
-        3.  [Servidor Maestro](#orga7f66b8)
-        4.  [Servidor Esclavo](#orga71b3b8)
-        5.  [Virtual Hosts](#orgac031a0)
-        6.  [MediaWiki](#org3f8c63c)
-        7.  [phpMyAdmin](#org894eb95)
-        8.  [Verificación](#org340bc45)
-    3.  [Configuracion](#org8000a04)
-        1.  [Instalación](#orgcf2284d)
-        2.  [Configuración de 'Master'](#orgdc70e5a)
-        3.  [Configuración de 'Slave'](#orgbf151eb)
-        4.  [Configuración de 'MediaWiki'](#orge0dfcef)
-        5.  [Configuración de 'phpMyAdmin'](#org592b8d3)
-    4.  [Ligas de acceso](#orgf914c48)
-        1.  [Servidor Maestro](#org6ffae47)
-        2.  [Servidor Esclavo](#org943d8d5)
-    5.  [Certificado SSL](#orge334c69)
-    6.  [Configuración de Hosts Virtuales](#org8c29f49)
-    7.  [Videos](#org14679d8)
-    8.  [Errores frecuentes.](#org177cfc4)
-    9.  [Bibliografía](#org9a530d4)
+1.  [Replicación de bases de datos](#orgc315ffe)
+    1.  [Cosas por hacer](#org886502b)
+2.  [Reporte](#org45f0fae)
+        1.  [Integrantes:](#org7cc0342)
+    1.  [Introducción](#org3ecbf2d)
+    2.  [Instalación](#org97e3dc5)
+        1.  [Servidores:](#org1a2c711)
+        2.  [Paquetes necesarios](#orgc496e4e)
+        3.  [Servidor Maestro](#org4a7bb0f)
+        4.  [Servidor Esclavo](#org96ac95a)
+        5.  [Virtual Hosts](#org9cacbbb)
+        6.  [MediaWiki](#orga0fb80f)
+        7.  [phpMyAdmin](#org565a075)
+        8.  [Verificación](#org601fa2e)
+        9.  [PostgreSQL, phpPgAdmin](#org279685c)
+        10. [Apache Web Server](#org89e2ccd)
+    3.  [Configuracion](#orge2d2505)
+        1.  [Instalación](#org6618e5d)
+        2.  [Configuración de 'Master' (MySQL)](#orgb187e7b)
+        3.  [Configuración de 'Slave'  (MySQL)](#org8ec5afd)
+        4.  [Configuración de 'MediaWiki'](#org2d3e509)
+        5.  [Configuración de 'phpMyAdmin'](#org2486db4)
+        6.  [Configuración de 'postgreSQL'](#org941f7c6)
+    4.  [Ligas de acceso](#org5725ecb)
+        1.  [Servidor Maestro](#orgec31564)
+        2.  [Servidor Esclavo](#orgac9cb6a)
+    5.  [Certificado SSL](#org5257a7a)
+    6.  [Configuración de Hosts Virtuales](#org0b0b86d)
+    7.  [Videos](#org0604202)
+    8.  [Errores frecuentes.](#orgc3652f8)
+    9.  [Bibliografía](#org37047fe)
 
 
-<a id="orgf505f87"></a>
+<a id="orgc315ffe"></a>
 
 # Replicación de bases de datos
 
 
-<a id="org054cdbf"></a>
+<a id="org886502b"></a>
 
 ## Cosas por hacer
 
@@ -62,12 +65,12 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 ![Diagrama](./img/diagrama.png)
 
 
-<a id="orgbc7dc4c"></a>
+<a id="org45f0fae"></a>
 
 # Reporte
 
 
-<a id="org37d6157"></a>
+<a id="org7cc0342"></a>
 
 ### Integrantes:
 
@@ -76,12 +79,14 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 -   Vazquez Rizo Paola
 
 
-<a id="org95bfcf3"></a>
+<a id="org3ecbf2d"></a>
 
 ## Introducción
 
-El trabajo se realizó en una máquina física y local, para posteriormente pasar
-todo el trabajo al servidor de Amazon.
+En un inicio, el trabajo se realizó en una máquina física y local, para 
+posteriormente pasar todo el trabajo al servidor de Amazon. Debido a fallas en
+la comunicación, el trabajo se realizó en servidores de `digitalOcean`, en 
+unos de prueba y posteriormente a los servidores que entregamos con este trabajo.
 
 Recordemos que una replicación de base de datos sirve para copiar de forma
 exacta en otra ubicación una instancia de la base de datos. Podemos usarla en
@@ -123,7 +128,7 @@ Los siguiente es necesario para el correcto funcionamiento del proyecto.
 4.  phpMyAdmin
 
 
-<a id="org5e617cb"></a>
+<a id="org97e3dc5"></a>
 
 ## Instalación
 
@@ -139,7 +144,7 @@ Las direcciones de dichos servidores son las siguientes:
 -   Slave:  [104.248.120.69]
 
 
-<a id="org41267df"></a>
+<a id="org1a2c711"></a>
 
 ### Servidores:
 
@@ -154,7 +159,7 @@ cuestiones de seguridad, sin embargo, en caso de ser requerida se pueden
 poner en contacto con algún integrante del equipo para brindarla.
 
 
-<a id="org10f7af6"></a>
+<a id="orgc496e4e"></a>
 
 ### Paquetes necesarios
 
@@ -192,7 +197,7 @@ siguiente
     apt-get install phpmyadmin php-mbstring php-gettext
 
 
-<a id="orga7f66b8"></a>
+<a id="org4a7bb0f"></a>
 
 ### Servidor Maestro
 
@@ -200,20 +205,26 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
      vi /etc/mysql/mysql.conf.d/mysqld.cnf
+     #+end_src sh
     
      Una vez editado, procedemos a reiniciar MySQL
     
+     #+begin_src sh :exports code
      service mtysql restart
+     #+end_src sh
     
      Ahora procedemos a acceder a MySQL
     
+     #+begin_src sh :exports code
      mysql -uroot
+     #+end_src sh
     
      Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
      de /Configuración/.
     
      Hacemos un sanpshot usando  =mysqldump= con el siguiente comando
     
+    #+begin_src sh :exports code
     mysqldump -uroot --all-databases --master-data > masterdump.sql
 
 Y se lo mandamos al esclavo
@@ -221,7 +232,7 @@ Y se lo mandamos al esclavo
     scp masterdump.sql 104.248.120.69:
 
 
-<a id="orga71b3b8"></a>
+<a id="org96ac95a"></a>
 
 ### Servidor Esclavo
 
@@ -229,14 +240,19 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
     vi /etc/mysql/mysql.conf.d/mysqld.cnf
+    #+end_src sh
     
     Una vez editado, procedemos a reiniciar MySQL
     
+    #+begin_src sh :exports code
     service mtysql restart
+    #+end_src sh
     
     Ahora procedemos a acceder a MySQL
     
+    #+begin_src sh :exports code
     mysql -uroot
+    #+end_src sh
     
     Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
     de /Configuración/.
@@ -244,11 +260,12 @@ la sección de *Configuración*.
     Ahora procedemos a restaurar la base de datos del maestro. Y entramos de 
     nuevo a la consola (Ver /Configuración/).
     
+    #+begin_src sh :exports code
     mysql -uroot < masterdump.sql
     mysql -uroot
 
 
-<a id="orgac031a0"></a>
+<a id="org9cacbbb"></a>
 
 ### Virtual Hosts
 
@@ -271,7 +288,7 @@ Deshabilitamos el host anterior y actualizamos `apache` con lo siguiente
     systemctl reload apache2
 
 
-<a id="org3f8c63c"></a>
+<a id="orga0fb80f"></a>
 
 ### MediaWiki
 
@@ -280,18 +297,22 @@ proceso de instalación.
 
 Una vez instalado, procedemos a descomprimir el paquete.
 
-`sudo tar -xvf mediawiki-1.33.0.tar.gz`
+\#+begin<sub>src</sub> sh :exports code
+sudo tar -xvf mediawiki-1.33.0.tar.gz
+\#+end<sub>src</sub> sh
 
 Ahora, moveremos el archivo descomprimido `mediawiki-1.33.0` al directorio 
 `mediawiki`.
 
-`sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/`
+\#+begin<sub>src</sub> sh :exports code
+sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
+\#+end<sub>src</sub> sh
 
 Como MediaWiki tiene que comunicarse con una base de datos para guardar la
 información, vamos a crear una. (Ver *Configuración de MediaWiki*).
 
 
-<a id="org894eb95"></a>
+<a id="org565a075"></a>
 
 ### phpMyAdmin
 
@@ -314,63 +335,97 @@ importante recalcar que esto debe hacerse tanto en 'Master' como en 'Slave'.
     sydo -u mysql-p
 
 
-<a id="org340bc45"></a>
+<a id="org601fa2e"></a>
 
 ### Verificación
 
 Podemos ver que cada que escribimos en el maestro, se escribe automáticamente
 en el esclavo, esto nos habla de una replicación instantánea.
 
-<a id="org31b590d"></a>
+
+<a id="org279685c"></a>
 
 ### PostgreSQL, phpPgAdmin
 
-Para instalar estos paquetes:
+Lo que se quiere lograr con la replicación es que todo lo que se encuentra en
+nuestra base de datos de el ****master**** se replique automáticamente al
+****slave****, de forma que estén sincornizados. Para esto se debe configurar. 
+Usaremos la  versión 10.
 
-    sudo apt -y install postgresql postgresql-contrib phppgadmin
+La replicación con `postgreSQL` (Al igual que la otra), busca que todo lo que
+se encuentre en la base de datos en '**master**' se replique automáticamente en
+'**slave**'. Para lograr esto, tenemos que configurar `postgreSQL`, de forma 
+que usaremos la versión 10.
 
-Una vez instalados, podemos habilitar los servicios:
+Tuvimos problemas con la versión en los servidores (Ver *Errores frecuentes*)
+por lo que los siguientes pasos se siguieron para poder descargar la versión
+correcta en ambos servidores.
 
-    systemctl start postgresql
-    systemctl enable postgresql
+Agregamos `ostgreSQL` a nuestro repositorio de `Ubuntu` con el siguiente
+comando.
 
-1.  Apache Web Server
+    echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main 11" |
+    sudo tee /etc/apt/sources.list.d/pgsql.list
 
-    En esta parte, vamos a realizar la configuración para `phpPgAdmin`, la cuál 
-    es generada automáticamente durante la instalación. Lo primero es crear el 
-    archivo `phopgadmin.conf`. Añadiendo la siguiente línea al inicio de nuestro
-    archivo `Alias /pgsqladminlogin /usr/share/phppgadmin`, comentamos la línea
-    `Requiere local` y agregamos `Allow From all`. Una vez hecho todo eso, 
-    podemos guardar, cerrar y reiniciar el servicio.
-    
-        systemctl restart apache2
+Después agregamos la llave GPG, y actualizamos el repositorio `apt`.
 
-<a id="org8000a04"></a>
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sudo apt update
+
+Después instalaremos con:
+
+    sudo apt install postgresql-10
+
+Una vez con los paquetes ver *Configuración-Configuración de 'PostgreSQL'*
+para ver lo que se hizo.
+
+
+<a id="org89e2ccd"></a>
+
+### Apache Web Server
+
+En esta parte, vamos a realizar la configuración para `phpPgAdmin`, la cuál 
+es generada automáticamente durante la instalación. Lo primero es crear el 
+archivo `phopgadmin.conf`. Añadiendo la siguiente línea al inicio de nuestro
+archivo `Alias /pgsqladminlogin /usr/share/phppgadmin`, comentamos la línea
+`Requiere local` y agregamos `Allow From all`. Una vez hecho todo eso, 
+podemos guardar, cerrar y reiniciar el servicio.
+
+    systemctl restart apache2
+
+
+<a id="orge2d2505"></a>
 
 ## Configuracion
 
 
-<a id="orgcf2284d"></a>
+<a id="org6618e5d"></a>
 
 ### Instalación
 
 En general para cualquier cosa que descarguemos sirve el comando
 
-`sudo apt-get install <paquete>`
+\#+begin<sub>src</sub> sh :exports code
+sudo apt-get install <paquete>
+\#+end<sub>src</sub> sh
 
 `mediaWiki` se va a instalar con el siguiente comando.
-`sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>`
+\#+begin<sub>src</sub> sh :exports code
+sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
+\#+end<sub>src</sub> sh    
 
 
-<a id="orgdc70e5a"></a>
+<a id="orgb187e7b"></a>
 
-### Configuración de 'Master'
+### Configuración de 'Master' (MySQL)
 
 En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el 
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-`bind-address          = 104.248.53.119`
+\#+begin<sub>src</sub> sh :exports code
+bind-address          = 104.248.53.119
+\#+end<sub>src</sub> sh
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`.
@@ -380,14 +435,18 @@ En el mismo archivo, también tenemos que descomentar las líneas de
     Lo primero es crear un usuario:
     
         create user 'repl'@'%' identified by 'slavepassword';
+        #+end_src sh
         
         El siguiente comando es para crear la replicación
         
+        #+begin_src sh :exports code
         grant replication slave on *.* to 'repl'@'%';
+        #+end_src sh
         
         Para probar lo hecho anteriormente
         Creamos la base de datos.
         
+        #+begin_src sh :exports code
         create database pets;
         create database pets.cats (name varchar(20));
         insert into pets.cats values ('fluffy');
@@ -395,21 +454,25 @@ En el mismo archivo, también tenemos que descomentar las líneas de
         exit
 
 
-<a id="orgbf151eb"></a>
+<a id="org8ec5afd"></a>
 
-### Configuración de 'Slave'
+### Configuración de 'Slave'  (MySQL)
 
 En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el 
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-`bind-address          = 104.248.53.119`
+\#+begin<sub>src</sub> sh :exports code
+bind-address          = 104.248.53.119
+\#+end<sub>src</sub> sh
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`. El `server-id` tiene que quedar de la siguiente
 manera.
 
-`server-id             = 2`
+\#+begin<sub>src</sub> sh :exports code
+server-id             = 2
+\#+end<sub>src</sub> sh    
 
 1.  Consola de MySQL
 
@@ -432,22 +495,26 @@ manera.
     Y verificar que en efecto, la replicación está lista.
 
 
-<a id="orge0dfcef"></a>
+<a id="org2d3e509"></a>
 
 ### Configuración de 'MediaWiki'
 
 Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
 
-> sudo mysql -u root -p
+\#+begin<sub>src</sub> sh :exports code
+sudo mysql -u root -p
+\#+end<sub>src</sub> sh
 
 Ahora creamos una base de datos y un usuario. la base de datos llevará por 
 nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la 
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-> CREATE DATABASE my<sub>wiki</sub>;
-> CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-> GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+\#+begin<sub>src</sub> sh :exports code
+CREATE DATABASE my<sub>wiki</sub>;
+CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+\#+end<sub>src</sub> sh
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
@@ -460,15 +527,16 @@ cual contiene las configuraciones de la instalación.
 Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
 restringir el acceso de la siguiente manera.
 
-> mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
-> 
-> sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
+\#+begin<sub>src</sub> sh :exports code
+mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
+sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
+\#+end<sub>src</sub> sh
 
 La contraseña de `mediaWiki` no la pondremos en este reporte, pero de nuevo,
 de ser requerida, cualquier miembro del equipo puede brindarla.
 
 
-<a id="org592b8d3"></a>
+<a id="org2486db4"></a>
 
 ### Configuración de 'phpMyAdmin'
 
@@ -480,7 +548,103 @@ encuentra arriba.
 Ahora podemos accesar a la interfaz de web visitando `http://<dominio>/phpmyadmin`
 
 
-<a id="orgf914c48"></a>
+<a id="org941f7c6"></a>
+
+### Configuración de 'postgreSQL'
+
+Una vez instalado `postgreSQL`, necesitamos una contraseña para este, el 
+siguiente comando nos ayuda con esto. La contraseña igual que las demás, no
+se pondrá aquí, pero se puede contactar a cualquier persona del equipo en 
+caso de requerirse.
+
+    sudo passwd postgres
+
+Es importante hacer lo mismo en el `servidor slave`.
+
+1.  Master
+
+    Ahora vamos a iniciar sesión en `postgreSQL` en el servidor `master`.
+    
+        su - postgres
+    
+    Una vez dentro, vamos a crear un usuario para la replicación:
+    
+        psql -c "CREATE USER replication REPLICATION LOGIN CONNECTION LIMIT 1 ENCRYPTED PASSWORD password;"
+    
+    Ahora podemos salir de `postgreSQL` y necesitamos configurar el siguiente 
+    archivo `/etc/postgresql/10/main/pg_hba.conf`, en el cuál necesitamos agregar 
+    la siguiente línea al final del archivo
+    `host    replication     replication   DIRECCIÓN/24   md5`. Donde '**DIRECCIÓN**'
+    es la dirección de `slave` (Ver *Instalación* para las direcciones).
+    
+    Ahora abrimos la configuración de `postgreSQL`, la cual se encuentra en el
+    siguiente archivo: `/etc/postgresql/10/main/postgresql.conf`. Tenemos que 
+    cambiar las siguiente líneas y descomentarlas (de ser necesario).
+    
+    -   `listen_addresses = 'localhost, DIR_MASTER'` con DIR<sub>MASTER</sub> la dirección del servidor `master`
+    -   `wal_level = replica`
+    -   `max_wal_senders = 10`
+    -   `wal_keep_segments = 64`
+    
+    Una vez hecho esto, ponemos el siguiente comando para resetear el servidio de
+    `postgreSQL`.
+    
+        systemctl restart postgresql
+
+2.  Slave
+
+    Una vez dentro del servidor `Slave`, vamos a ingresar sesión, y detener el 
+    servicio en el servidor. Los siguientes comandos hacen exactamente eso.
+    
+        su - postgres
+        systemctl stop postgresql
+    
+    Una vez hecho lo anterior, vamos a editar el mismo archivo que en `master`,
+    esto es `/etc/postgresql/10/main/pg_hba.conf`, y vamos a agregar la siguiente
+    línea, igual que hicimos en `master`. Donde '**DIRECCIÓN**' es la dirección de
+    `master`.
+    
+        host    replication     replication     DIRECCIÓN/24   md5
+    
+    Ahora vamos a abrir la configuración, la cual se encuentra en 
+    `/etc/postgresql/10/main/postgresql.conf` Tenemos que cambiar las siguiente 
+    líneas y descomentarlas (de ser necesario).
+    
+    -   `listen_addresses = 'localhost, DIR_SLAVE'` con DIR<sub>SLAVE</sub> la dirección del servidor `slave`
+    -   `wal_level = replica`
+    -   `max_wal_senders = 10`
+    -   `wal_keep_segments = 64`
+    -   `hot_standby = on`
+    
+    Ahora vamos a nuestro `data_directory` y borramos todo lo que contenga.
+    
+        cd /var/lib/postgresql/10/main
+        rm -rfv *
+    
+    Y podemos copiar los archivos de `master`. Recordemos que '**DIR<sub>MASTER</sub>**' es 
+    la dirección de nuestro servidor `master`.
+    
+        pg_basebackup -h DIR_MASTER -D /var/lib/postgresql/10/main/ -P -U replication --wal-method=fetch
+    
+    Ahora creamos el archivo `recovery.conf`, y agregamos lo siguiente:
+    
+        standby_mode          = 'on'
+        primary_conninfo      = 'host=DIR_MASTER192.168.199.137 port=5432 user=replication password=password'
+        trigger_file = '/tmp/MasterNow'
+    
+    Una vez hecho esto, podemos iniciar el servicio de `postgreSQL`:
+    
+        systemctl start postgresql
+
+3.  Tests
+
+    Si todo salió bien, la replicación ya estaría, faltaría probarla, para esto
+    en `master` basta con `CREATE TABLE...` y agregamos valores, luego vamos a 
+    `slave` y verificamos que esos valores se encuentren reflejados
+    `SELECT * FROM ...`.
+
+
+<a id="org5725ecb"></a>
 
 ## Ligas de acceso
 
@@ -489,7 +653,7 @@ Por el momento, por falta de comunicación, solo tenemos una instancia de
 `postgres`.
 
 
-<a id="org6ffae47"></a>
+<a id="orgec31564"></a>
 
 ### Servidor Maestro
 
@@ -497,14 +661,14 @@ Por el momento, por falta de comunicación, solo tenemos una instancia de
 -   Podemos ver la instancia de `phpMyAdmin` [phpMyAdmin](http://104.248.53.119/phpmyadmin/)
 
 
-<a id="org943d8d5"></a>
+<a id="orgac9cb6a"></a>
 
 ### Servidor Esclavo
 
 -   Podemos ver la instancia de `phpMyAdmin` en [phpMyAdmin](http://104.248.120.69/phpmyadmin/)
 
 
-<a id="orge334c69"></a>
+<a id="org5257a7a"></a>
 
 ## Certificado SSL
 
@@ -516,7 +680,7 @@ comandos.
     sudo certbot --apache
 
 
-<a id="org8c29f49"></a>
+<a id="org0b0b86d"></a>
 
 ## Configuración de Hosts Virtuales
 
@@ -563,7 +727,7 @@ Y listo, hay que replicarlo en el otro servidor (Master o Slave) según sea el
 caso.
 
 
-<a id="org14679d8"></a>
+<a id="org0604202"></a>
 
 ## Videos
 
@@ -571,7 +735,7 @@ La lista de reproducción para nuestros videos, se puede encontrar en el
 siguiente [link](https://www.youtube.com/playlist?list=PLH4x3V-hHwbXwkcet0yYi-CYQWTQxjU9V).
 
 
-<a id="org177cfc4"></a>
+<a id="orgc3652f8"></a>
 
 ## Errores frecuentes.
 
@@ -594,7 +758,7 @@ Lo último (Aunque no fue error como tal) fue tener dos instancias de
 `mediaWiki` juntas, pero después de checar algunos foros lo logramos.
 
 
-<a id="org9a530d4"></a>
+<a id="org37047fe"></a>
 
 ## Bibliografía
 
