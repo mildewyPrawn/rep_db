@@ -420,9 +420,11 @@ nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-`CREATE DATABASE my<sub>wiki</sub>;
+\#+begin<sub>src</sub> sh :exports code
+CREATE DATABASE my<sub>wiki</sub>;
 CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';`
+GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+\#+end<sub>src</sub> sh
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
