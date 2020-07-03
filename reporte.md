@@ -204,27 +204,21 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
      vi /etc/mysql/mysql.conf.d/mysqld.cnf
-     #+end_src sh
     
      Una vez editado, procedemos a reiniciar MySQL
     
-     #+begin_src sh :exports code
      service mtysql restart
-     #+end_src sh
     
      Ahora procedemos a acceder a MySQL
     
-     #+begin_src sh :exports code
      mysql -uroot
-     #+end_src sh
     
      Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
      de /Configuración/.
     
      Hacemos un sanpshot usando  =mysqldump= con el siguiente comando
     
-    #+begin_src sh :exports code
-    mysqldump -uroot --all-databases --master-data > masterdump.sql
+     mysqldump -uroot --all-databases --master-data > masterdump.sql
 
 Y se lo mandamos al esclavo
 
@@ -239,19 +233,14 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
     vi /etc/mysql/mysql.conf.d/mysqld.cnf
-    #+end_src sh
     
     Una vez editado, procedemos a reiniciar MySQL
     
-    #+begin_src sh :exports code
     service mtysql restart
-    #+end_src sh
     
     Ahora procedemos a acceder a MySQL
     
-    #+begin_src sh :exports code
     mysql -uroot
-    #+end_src sh
     
     Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
     de /Configuración/.
@@ -259,7 +248,6 @@ la sección de *Configuración*.
     Ahora procedemos a restaurar la base de datos del maestro. Y entramos de 
     nuevo a la consola (Ver /Configuración/).
     
-    #+begin_src sh :exports code
     mysql -uroot < masterdump.sql
     mysql -uroot
 
@@ -296,16 +284,12 @@ proceso de instalación.
 
 Una vez instalado, procedemos a descomprimir el paquete.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo tar -xvf mediawiki-1.33.0.tar.gz
-\#+end<sub>src</sub> sh
+> sudo tar -xvf mediawiki-1.33.0.tar.gz
 
 Ahora, moveremos el archivo descomprimido `mediawiki-1.33.0` al directorio 
 `mediawiki`.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
-\#+end<sub>src</sub> sh
+> sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
 
 Como MediaWiki tiene que comunicarse con una base de datos para guardar la
 información, vamos a crear una. (Ver *Configuración de MediaWiki*).
@@ -404,14 +388,11 @@ podemos guardar, cerrar y reiniciar el servicio.
 
 En general para cualquier cosa que descarguemos sirve el comando
 
-\#+begin<sub>src</sub> sh :exports code
-sudo apt-get install <paquete>
-\#+end<sub>src</sub> sh
+> sudo apt-get install <paquete>
 
 `mediaWiki` se va a instalar con el siguiente comando.
-\#+begin<sub>src</sub> sh :exports code
-sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
-\#+end<sub>src</sub> sh    
+
+> sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
 
 
 <a id="org785c34c"></a>
@@ -422,9 +403,7 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-\#+begin<sub>src</sub> sh :exports code
-bind-address          = 104.248.53.119
-\#+end<sub>src</sub> sh
+> bind-address          = 104.248.53.119
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`.
@@ -434,18 +413,14 @@ En el mismo archivo, también tenemos que descomentar las líneas de
     Lo primero es crear un usuario:
     
         create user 'repl'@'%' identified by 'slavepassword';
-        #+end_src sh
         
         El siguiente comando es para crear la replicación
         
-        #+begin_src sh :exports code
         grant replication slave on *.* to 'repl'@'%';
-        #+end_src sh
         
         Para probar lo hecho anteriormente
         Creamos la base de datos.
         
-        #+begin_src sh :exports code
         create database pets;
         create database pets.cats (name varchar(20));
         insert into pets.cats values ('fluffy');
@@ -461,17 +436,13 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-\#+begin<sub>src</sub> sh :exports code
-bind-address          = 104.248.53.119
-\#+end<sub>src</sub> sh
+> bind-address          = 104.248.53.119
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`. El `server-id` tiene que quedar de la siguiente
 manera.
 
-\#+begin<sub>src</sub> sh :exports code
-server-id             = 2
-\#+end<sub>src</sub> sh    
+> server-id             = 2
 
 1.  Consola de MySQL
 
@@ -500,20 +471,19 @@ server-id             = 2
 
 Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
 
-\#+begin<sub>src</sub> sh :exports code
-sudo mysql -u root -p
-\#+end<sub>src</sub> sh
+> sudo mysql -u root -p
 
 Ahora creamos una base de datos y un usuario. la base de datos llevará por 
 nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la 
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-\#+begin<sub>src</sub> sh :exports code
-CREATE DATABASE my<sub>wiki</sub>;
-CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-\#+end<sub>src</sub> sh
+> CREATE DATABASE my<sub>wiki</sub>;
+> 
+> CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+> 
+> GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
@@ -526,10 +496,9 @@ cual contiene las configuraciones de la instalación.
 Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
 restringir el acceso de la siguiente manera.
 
-\#+begin<sub>src</sub> sh :exports code
-mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
-sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
-\#+end<sub>src</sub> sh
+> mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
+> 
+> sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
 
 La contraseña de `mediaWiki` no la pondremos en este reporte, pero de nuevo,
 de ser requerida, cualquier miembro del equipo puede brindarla.
@@ -767,4 +736,5 @@ Lo último (Aunque no fue error como tal) fue tener dos instancias de
 -   [LAMP Stack](https://www.linode.com/docs/web-servers/lamp/how-to-install-a-lamp-stack-on-ubuntu-18-04/)
 -   [mediaWiki Ubuntu](https://www.linode.com/docs//websites/wikis/install-mediawiki-on-ubuntu-1804/)
 -   [Configuración MySQL](https://www.youtube.com/watch?v=JXDuVypcHNA)
+-   [PostgreSQL](https://linuxhint.com/setup_postgresql_replication/)
 
