@@ -1,45 +1,45 @@
 
 # Table of Contents
 
-1.  [Replicación de bases de datos](#orgc315ffe)
-    1.  [Cosas por hacer](#org886502b)
-2.  [Reporte](#org45f0fae)
-        1.  [Integrantes:](#org7cc0342)
-    1.  [Introducción](#org3ecbf2d)
-    2.  [Instalación](#org97e3dc5)
-        1.  [Servidores:](#org1a2c711)
-        2.  [Paquetes necesarios](#orgc496e4e)
-        3.  [Servidor Maestro](#org4a7bb0f)
-        4.  [Servidor Esclavo](#org96ac95a)
-        5.  [Virtual Hosts](#org9cacbbb)
-        6.  [MediaWiki](#orga0fb80f)
-        7.  [phpMyAdmin](#org565a075)
-        8.  [Verificación](#org601fa2e)
-        9.  [PostgreSQL, phpPgAdmin](#org279685c)
-        10. [Apache Web Server](#org89e2ccd)
-    3.  [Configuracion](#orge2d2505)
-        1.  [Instalación](#org6618e5d)
-        2.  [Configuración de 'Master' (MySQL)](#orgb187e7b)
-        3.  [Configuración de 'Slave'  (MySQL)](#org8ec5afd)
-        4.  [Configuración de 'MediaWiki'](#org2d3e509)
-        5.  [Configuración de 'phpMyAdmin'](#org2486db4)
-        6.  [Configuración de 'postgreSQL'](#org941f7c6)
-    4.  [Ligas de acceso](#org5725ecb)
-        1.  [Servidor Maestro](#orgec31564)
-        2.  [Servidor Esclavo](#orgac9cb6a)
-    5.  [Certificado SSL](#org5257a7a)
-    6.  [Configuración de Hosts Virtuales](#org0b0b86d)
-    7.  [Videos](#org0604202)
-    8.  [Errores frecuentes.](#orgc3652f8)
-    9.  [Bibliografía](#org37047fe)
+1.  [Replicación de bases de datos](#org8c1d4cb)
+    1.  [Cosas por hacer](#org5e82177)
+2.  [Reporte](#orgc7885e0)
+        1.  [Integrantes:](#orgf147917)
+    1.  [Introducción](#org4498bba)
+    2.  [Instalación](#org00ebc7c)
+        1.  [Servidores:](#orgf029183)
+        2.  [Paquetes necesarios](#org948ad01)
+        3.  [Servidor Maestro](#org86393c2)
+        4.  [Servidor Esclavo](#org6a52d03)
+        5.  [Virtual Hosts](#orga63ffe0)
+        6.  [MediaWiki](#org5cb8c38)
+        7.  [phpMyAdmin](#orgb4d6571)
+        8.  [Verificación](#org20d51ea)
+        9.  [PostgreSQL, phpPgAdmin](#org06b4473)
+        10. [Apache Web Server](#org0043266)
+    3.  [Configuracion](#org1c54dfb)
+        1.  [Instalación](#orgd6ef968)
+        2.  [Configuración de 'Master' (MySQL)](#org785c34c)
+        3.  [Configuración de 'Slave'  (MySQL)](#org89f0cc4)
+        4.  [Configuración de 'MediaWiki'](#orgd7b9c45)
+        5.  [Configuración de 'phpMyAdmin'](#org70ada32)
+        6.  [Configuración de 'postgreSQL'](#orgeb213bc)
+    4.  [Ligas de acceso](#orga96cee1)
+        1.  [Servidor Maestro](#org90f5e02)
+        2.  [Servidor Esclavo](#org20bce52)
+    5.  [Certificado SSL](#orgefa5f6d)
+    6.  [Configuración de Hosts Virtuales](#org0bd0c44)
+    7.  [Videos](#orgfa7c2c6)
+    8.  [Errores frecuentes.](#org7e20172)
+    9.  [Bibliografía](#org49a53a9)
 
 
-<a id="orgc315ffe"></a>
+<a id="org8c1d4cb"></a>
 
 # Replicación de bases de datos
 
 
-<a id="org886502b"></a>
+<a id="org5e82177"></a>
 
 ## Cosas por hacer
 
@@ -64,13 +64,12 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
 ![Diagrama](./img/diagrama.png)
 
-
-<a id="org45f0fae"></a>
+<a id="orgc7885e0"></a>
 
 # Reporte
 
 
-<a id="org7cc0342"></a>
+<a id="orgf147917"></a>
 
 ### Integrantes:
 
@@ -79,7 +78,7 @@ El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 -   Vazquez Rizo Paola
 
 
-<a id="org3ecbf2d"></a>
+<a id="org4498bba"></a>
 
 ## Introducción
 
@@ -128,7 +127,7 @@ Los siguiente es necesario para el correcto funcionamiento del proyecto.
 4.  phpMyAdmin
 
 
-<a id="org97e3dc5"></a>
+<a id="org00ebc7c"></a>
 
 ## Instalación
 
@@ -144,7 +143,7 @@ Las direcciones de dichos servidores son las siguientes:
 -   Slave:  [104.248.120.69]
 
 
-<a id="org1a2c711"></a>
+<a id="orgf029183"></a>
 
 ### Servidores:
 
@@ -159,7 +158,7 @@ cuestiones de seguridad, sin embargo, en caso de ser requerida se pueden
 poner en contacto con algún integrante del equipo para brindarla.
 
 
-<a id="orgc496e4e"></a>
+<a id="org948ad01"></a>
 
 ### Paquetes necesarios
 
@@ -197,7 +196,7 @@ siguiente
     apt-get install phpmyadmin php-mbstring php-gettext
 
 
-<a id="org4a7bb0f"></a>
+<a id="org86393c2"></a>
 
 ### Servidor Maestro
 
@@ -205,28 +204,34 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
      vi /etc/mysql/mysql.conf.d/mysqld.cnf
+     #+end_src sh
     
      Una vez editado, procedemos a reiniciar MySQL
     
+     #+begin_src sh :exports code
      service mtysql restart
+     #+end_src sh
     
      Ahora procedemos a acceder a MySQL
     
+     #+begin_src sh :exports code
      mysql -uroot
+     #+end_src sh
     
      Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
      de /Configuración/.
     
      Hacemos un sanpshot usando  =mysqldump= con el siguiente comando
     
-     mysqldump -uroot --all-databases --master-data > masterdump.sql
+    #+begin_src sh :exports code
+    mysqldump -uroot --all-databases --master-data > masterdump.sql
 
 Y se lo mandamos al esclavo
 
     scp masterdump.sql 104.248.120.69:
 
 
-<a id="org96ac95a"></a>
+<a id="org6a52d03"></a>
 
 ### Servidor Esclavo
 
@@ -234,14 +239,19 @@ Necesitamos editar el siguiente archivo. Los cambios se pueden encontrar en
 la sección de *Configuración*.
 
     vi /etc/mysql/mysql.conf.d/mysqld.cnf
+    #+end_src sh
     
     Una vez editado, procedemos a reiniciar MySQL
     
+    #+begin_src sh :exports code
     service mtysql restart
+    #+end_src sh
     
     Ahora procedemos a acceder a MySQL
     
+    #+begin_src sh :exports code
     mysql -uroot
+    #+end_src sh
     
     Los comandos ingresados en la consola de MySQL, se pueden ver en la sección
     de /Configuración/.
@@ -249,11 +259,12 @@ la sección de *Configuración*.
     Ahora procedemos a restaurar la base de datos del maestro. Y entramos de 
     nuevo a la consola (Ver /Configuración/).
     
+    #+begin_src sh :exports code
     mysql -uroot < masterdump.sql
     mysql -uroot
 
 
-<a id="org9cacbbb"></a>
+<a id="orga63ffe0"></a>
 
 ### Virtual Hosts
 
@@ -276,7 +287,7 @@ Deshabilitamos el host anterior y actualizamos `apache` con lo siguiente
     systemctl reload apache2
 
 
-<a id="orga0fb80f"></a>
+<a id="org5cb8c38"></a>
 
 ### MediaWiki
 
@@ -285,18 +296,22 @@ proceso de instalación.
 
 Una vez instalado, procedemos a descomprimir el paquete.
 
-> sudo tar -xvf mediawiki-1.33.0.tar.gz
+\#+begin<sub>src</sub> sh :exports code
+sudo tar -xvf mediawiki-1.33.0.tar.gz
+\#+end<sub>src</sub> sh
 
 Ahora, moveremos el archivo descomprimido `mediawiki-1.33.0` al directorio 
 `mediawiki`.
 
-> sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
+\#+begin<sub>src</sub> sh :exports code
+sudo mv mediawiki-1.33.0/ public<sub>html</sub>/mediawiki/
+\#+end<sub>src</sub> sh
 
 Como MediaWiki tiene que comunicarse con una base de datos para guardar la
 información, vamos a crear una. (Ver *Configuración de MediaWiki*).
 
 
-<a id="org565a075"></a>
+<a id="orgb4d6571"></a>
 
 ### phpMyAdmin
 
@@ -319,7 +334,7 @@ importante recalcar que esto debe hacerse tanto en 'Master' como en 'Slave'.
     sydo -u mysql-p
 
 
-<a id="org601fa2e"></a>
+<a id="org20d51ea"></a>
 
 ### Verificación
 
@@ -327,7 +342,7 @@ Podemos ver que cada que escribimos en el maestro, se escribe automáticamente
 en el esclavo, esto nos habla de una replicación instantánea.
 
 
-<a id="org279685c"></a>
+<a id="org06b4473"></a>
 
 ### PostgreSQL, phpPgAdmin
 
@@ -364,7 +379,7 @@ Una vez con los paquetes ver *Configuración-Configuración de 'PostgreSQL'*
 para ver lo que se hizo.
 
 
-<a id="org89e2ccd"></a>
+<a id="org0043266"></a>
 
 ### Apache Web Server
 
@@ -378,26 +393,28 @@ podemos guardar, cerrar y reiniciar el servicio.
     systemctl restart apache2
 
 
-<a id="orge2d2505"></a>
+<a id="org1c54dfb"></a>
 
 ## Configuracion
 
 
-<a id="org6618e5d"></a>
+<a id="orgd6ef968"></a>
 
 ### Instalación
 
 En general para cualquier cosa que descarguemos sirve el comando
 
-> sudo apt-get install <paquete>
+\#+begin<sub>src</sub> sh :exports code
+sudo apt-get install <paquete>
+\#+end<sub>src</sub> sh
 
 `mediaWiki` se va a instalar con el siguiente comando.
+\#+begin<sub>src</sub> sh :exports code
+sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
+\#+end<sub>src</sub> sh    
 
-> sudo curl -O <https://releases.wikimedia.org/mediawiki/1.33/mediawiki-1.33.0.tar.gz>    
 
-
-
-<a id="orgb187e7b"></a>
+<a id="org785c34c"></a>
 
 ### Configuración de 'Master' (MySQL)
 
@@ -405,7 +422,9 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-> bind-address          = 104.248.53.119
+\#+begin<sub>src</sub> sh :exports code
+bind-address          = 104.248.53.119
+\#+end<sub>src</sub> sh
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`.
@@ -415,14 +434,18 @@ En el mismo archivo, también tenemos que descomentar las líneas de
     Lo primero es crear un usuario:
     
         create user 'repl'@'%' identified by 'slavepassword';
+        #+end_src sh
         
         El siguiente comando es para crear la replicación
         
+        #+begin_src sh :exports code
         grant replication slave on *.* to 'repl'@'%';
+        #+end_src sh
         
         Para probar lo hecho anteriormente
         Creamos la base de datos.
         
+        #+begin_src sh :exports code
         create database pets;
         create database pets.cats (name varchar(20));
         insert into pets.cats values ('fluffy');
@@ -430,7 +453,7 @@ En el mismo archivo, también tenemos que descomentar las líneas de
         exit
 
 
-<a id="org8ec5afd"></a>
+<a id="org89f0cc4"></a>
 
 ### Configuración de 'Slave'  (MySQL)
 
@@ -438,13 +461,17 @@ En el archivo `/etc/mysql/mysql.conf.d/mysqld.cnf` vamos a modificar el
 `bind-address`, por lo que basta con encontrar dicha línea y escribir lo 
 siguiente.
 
-> bind-address          = 104.248.53.119
+\#+begin<sub>src</sub> sh :exports code
+bind-address          = 104.248.53.119
+\#+end<sub>src</sub> sh
 
 En el mismo archivo, también tenemos que descomentar las líneas de
 `server-id` y `log-bin`. El `server-id` tiene que quedar de la siguiente
 manera.
 
-> server-id             = 2
+\#+begin<sub>src</sub> sh :exports code
+server-id             = 2
+\#+end<sub>src</sub> sh    
 
 1.  Consola de MySQL
 
@@ -467,25 +494,26 @@ manera.
     Y verificar que en efecto, la replicación está lista.
 
 
-<a id="org2d3e509"></a>
+<a id="orgd7b9c45"></a>
 
 ### Configuración de 'MediaWiki'
 
 Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
 
-> sudo mysql -u root -p
+\#+begin<sub>src</sub> sh :exports code
+sudo mysql -u root -p
+\#+end<sub>src</sub> sh
 
 Ahora creamos una base de datos y un usuario. la base de datos llevará por 
 nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la 
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-
-> CREATE DATABASE my<sub>wiki</sub>;
-> 
-> CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-> 
-> GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+\#+begin<sub>src</sub> sh :exports code
+CREATE DATABASE my<sub>wiki</sub>;
+CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+\#+end<sub>src</sub> sh
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
@@ -498,15 +526,16 @@ cual contiene las configuraciones de la instalación.
 Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
 restringir el acceso de la siguiente manera.
 
-> mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
-> 
-> sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
+\#+begin<sub>src</sub> sh :exports code
+mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
+sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
+\#+end<sub>src</sub> sh
 
 La contraseña de `mediaWiki` no la pondremos en este reporte, pero de nuevo,
 de ser requerida, cualquier miembro del equipo puede brindarla.
 
 
-<a id="org2486db4"></a>
+<a id="org70ada32"></a>
 
 ### Configuración de 'phpMyAdmin'
 
@@ -518,7 +547,7 @@ encuentra arriba.
 Ahora podemos accesar a la interfaz de web visitando `http://<dominio>/phpmyadmin`
 
 
-<a id="org941f7c6"></a>
+<a id="orgeb213bc"></a>
 
 ### Configuración de 'postgreSQL'
 
@@ -614,7 +643,7 @@ Es importante hacer lo mismo en el `servidor slave`.
     `SELECT * FROM ...`.
 
 
-<a id="org5725ecb"></a>
+<a id="orga96cee1"></a>
 
 ## Ligas de acceso
 
@@ -623,7 +652,7 @@ Por el momento, por falta de comunicación, solo tenemos una instancia de
 `postgres`.
 
 
-<a id="orgec31564"></a>
+<a id="org90f5e02"></a>
 
 ### Servidor Maestro
 
@@ -631,14 +660,14 @@ Por el momento, por falta de comunicación, solo tenemos una instancia de
 -   Podemos ver la instancia de `phpMyAdmin` [phpMyAdmin](http://104.248.53.119/phpmyadmin/)
 
 
-<a id="orgac9cb6a"></a>
+<a id="org20bce52"></a>
 
 ### Servidor Esclavo
 
 -   Podemos ver la instancia de `phpMyAdmin` en [phpMyAdmin](http://104.248.120.69/phpmyadmin/)
 
 
-<a id="org5257a7a"></a>
+<a id="orgefa5f6d"></a>
 
 ## Certificado SSL
 
@@ -650,7 +679,7 @@ comandos.
     sudo certbot --apache
 
 
-<a id="org0b0b86d"></a>
+<a id="org0bd0c44"></a>
 
 ## Configuración de Hosts Virtuales
 
@@ -697,7 +726,7 @@ Y listo, hay que replicarlo en el otro servidor (Master o Slave) según sea el
 caso.
 
 
-<a id="org0604202"></a>
+<a id="orgfa7c2c6"></a>
 
 ## Videos
 
@@ -705,7 +734,7 @@ La lista de reproducción para nuestros videos, se puede encontrar en el
 siguiente [link](https://www.youtube.com/playlist?list=PLH4x3V-hHwbXwkcet0yYi-CYQWTQxjU9V).
 
 
-<a id="orgc3652f8"></a>
+<a id="org7e20172"></a>
 
 ## Errores frecuentes.
 
@@ -728,7 +757,7 @@ Lo último (Aunque no fue error como tal) fue tener dos instancias de
 `mediaWiki` juntas, pero después de checar algunos foros lo logramos.
 
 
-<a id="org37047fe"></a>
+<a id="org49a53a9"></a>
 
 ## Bibliografía
 
