@@ -435,9 +435,8 @@ cual contiene las configuraciones de la instalación.
 Como último paso, vamos a mover el arhivo antes mencionado y le vamos a 
 restringir el acceso de la siguiente manera.
 
-> mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
-> 
-> sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php
+`mv LocalSettings.php /var/www/html/foo/public<sub>html</sub>/mediawiki
+sudo chmod 700 /var/www/html/example.com/public<sub>html</sub>/media/wiki/LocalSettings.php`
 
 La contraseña de `mediaWiki` no la pondremos en este reporte, pero de nuevo,
 de ser requerida, cualquier miembro del equipo puede brindarla.
