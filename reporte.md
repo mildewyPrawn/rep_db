@@ -321,6 +321,29 @@ importante recalcar que esto debe hacerse tanto en 'Master' como en 'Slave'.
 Podemos ver que cada que escribimos en el maestro, se escribe automáticamente
 en el esclavo, esto nos habla de una replicación instantánea.
 
+<a id="org31b590d"></a>
+
+### PostgreSQL, phpPgAdmin
+
+Para instalar estos paquetes:
+
+    sudo apt -y install postgresql postgresql-contrib phppgadmin
+
+Una vez instalados, podemos habilitar los servicios:
+
+    systemctl start postgresql
+    systemctl enable postgresql
+
+1.  Apache Web Server
+
+    En esta parte, vamos a realizar la configuración para `phpPgAdmin`, la cuál 
+    es generada automáticamente durante la instalación. Lo primero es crear el 
+    archivo `phopgadmin.conf`. Añadiendo la siguiente línea al inicio de nuestro
+    archivo `Alias /pgsqladminlogin /usr/share/phppgadmin`, comentamos la línea
+    `Requiere local` y agregamos `Allow From all`. Una vez hecho todo eso, 
+    podemos guardar, cerrar y reiniciar el servicio.
+    
+        systemctl restart apache2
 
 <a id="org8000a04"></a>
 
@@ -558,13 +581,17 @@ configuración nos perjudicaría. Un error que tuvimos (Cuando lo hicimos con
 AWS). fue que no recordábamos el passphrase para conectarnos.
 
 Ya trabajando en `Digital Ocean` lo más complicado fue vimos fue intentar 
-realizarlo con `postgres`, pero en la entrega del video ya estará. Otro error
-Otro error que tuvimos fue que al momento de querer realizar una configuración
-, la documentación de `MySQL` dice que hay que editar el siguiente archivo
+realizarlo con `postgres`, pues tuvimos que realizarlo varias veces, incluso 
+en servidores de prueba porque nos fallaban algunas cosas de la conexión. Otro
+error que tuvimos fue que al momento de querer realizar una configuración, la
+documentación de `MySQL` dice que hay que editar el siguiente archivo
 `Domain Forwarding`, pero tuvimos problemas con eso y buscando, encontramos en
 un foro que para versiones recientes, había que modificar el siguiente archivo
 `/etc/mysql/mysql.conf.d/mysqld.cnf`, fue de las cosas más problemáticas que
-tuvimos.   
+tuvimos.
+
+Lo último (Aunque no fue error como tal) fue tener dos instancias de 
+`mediaWiki` juntas, pero después de checar algunos foros lo logramos.
 
 
 <a id="org9a530d4"></a>
