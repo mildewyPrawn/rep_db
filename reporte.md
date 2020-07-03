@@ -59,6 +59,8 @@
 
 El funcionamiento de estos servicios se puede ver en el siguiente diagrama:
 
+![Diagrama](./img/diagrama.png)
+
 
 <a id="orgbc7dc4c"></a>
 
@@ -413,18 +415,16 @@ manera.
 
 Antes de configurar MediaWiki como tal, vamos a crear una base de datos.
 
-`sudo mysql -u root -p`
+> sudo mysql -u root -p
 
 Ahora creamos una base de datos y un usuario. la base de datos llevará por 
 nombre `my_wiki`, el usuario será `media_wiki` y la contraseña no la 
 pondremos, pero en caso de requerirla, de nuevo, se puede contactar a 
 cualquier miembro del equipo.
 
-\#+begin<sub>src</sub> sh :exports code
-CREATE DATABASE my<sub>wiki</sub>;
-CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
-\#+end<sub>src</sub> sh
+> CREATE DATABASE my<sub>wiki</sub>;
+> CREATE USER 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
+> GRANT ALL ON my<sub>wiki</sub>.\* TO 'media<sub>wiki</sub>'@'localhost' IDENTIFIED BY 'password';
 
 Una vez hecho lo anterior, ahora si, procedemos a configurar `mediaWiki`.
 
